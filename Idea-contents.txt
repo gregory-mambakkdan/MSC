@@ -1,0 +1,39 @@
+Project Creation   MSC
+
+
+
+                      Index page
+
+Body - Light Grey Background/ White Text 
+
+Heading - H1 / Background Ocean Blue / Curved edges
+
+        Content In Page
+    Options to choose
+
+    *Home
+        **Products
+        **Location
+
+    *About
+
+
+
+
+
+                        Home Page
+
+
+Body - Light Grey Background/ White Text
+
+Heading - H1 / Background Ocean Blue / Curved edges
+
+            Content In Page
+
+    Products - Images / Products / Description
+                ->Click on Image for Description / If Yes Price
+    Location - Towards the footer(Google Maps Link)
+                ->Google Maps Opens
+                
+                 
+
