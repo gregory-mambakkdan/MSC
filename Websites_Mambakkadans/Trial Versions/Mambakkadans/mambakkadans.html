@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mambakkadans Steels & Cements</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0f0e;
+    --surface: #1a1917;
+    --surface2: #242220;
+    --amber: #e8a130;
+    --amber-light: #f0b84a;
+    --amber-dim: #c4861f;
+    --steel: #8b9da8;
+    --steel-light: #aabbc6;
+    --text: #f0ece4;
+    --text-muted: #9a9490;
+    --border: #2e2c29;
+    --radius: 4px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ---- NOISE OVERLAY ---- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.35;
+  }
+
+  /* ---- NAV ---- */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: rgba(15,15,14,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .nav-logo span { color: var(--amber); }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 400;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    transition: color 0.2s, background 0.2s;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+  }
+
+  .nav-links a:hover { color: var(--text); background: var(--surface); }
+  .nav-links a.active { color: var(--amber); }
+
+  .nav-dropdown { position: relative; }
+
+  .nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    min-width: 180px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  }
+
+  .nav-dropdown:hover .nav-dropdown-menu { display: block; }
+
+  .nav-dropdown-menu a {
+    display: block;
+    padding: 10px 16px;
+    border-radius: 0;
+    font-size: 13px;
+  }
+
+  .nav-cta {
+    background: var(--amber) !important;
+    color: #000 !important;
+    font-weight: 600 !important;
+    padding: 8px 18px !important;
+    border-radius: 4px !important;
+  }
+
+  .nav-cta:hover { background: var(--amber-light) !important; }
+
+  /* ---- PAGES ---- */
+  .page {
+    display: none;
+    min-height: 100vh;
+    padding-top: 64px;
+    animation: fadeIn 0.3s ease;
+  }
+  .page.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    min-height: calc(100vh - 64px);
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 80px 40px 80px;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 70% 50%, rgba(232,161,48,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(139,157,168,0.05) 0%, transparent 60%);
+  }
+
+  .hero-grid-lines {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .hero-content {
+    position: relative;
+    max-width: 680px;
+    z-index: 1;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232,161,48,0.1);
+    border: 1px solid rgba(232,161,48,0.25);
+    color: var(--amber);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 2px;
+    margin-bottom: 32px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--amber);
+    border-radius: 50%;
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 8vw, 96px);
+    line-height: 0.95;
+    letter-spacing: 1px;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .hero h1 em {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    color: var(--amber);
+    display: block;
+  }
+
+  .hero-sub {
+    font-size: 16px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 480px;
+    margin: 28px 0 44px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn-primary {
+    background: var(--amber);
+    color: #000;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 14px 28px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-primary:hover { background: var(--amber-light); transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 13px 28px;
+    border-radius: var(--radius);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s, background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-secondary:hover { border-color: var(--steel); background: var(--surface); }
+
+  .hero-stats {
+    position: absolute;
+    right: 40px;
+    bottom: 60px;
+    display: flex;
+    gap: 48px;
+  }
+
+  .stat { text-align: right; }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--text);
+    line-height: 1;
+  }
+  .stat-num span { color: var(--amber); }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ---- TRUST BAR ---- */
+  .trust-bar {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 40px;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    overflow-x: auto;
+    background: var(--surface);
+  }
+
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .trust-item .icon {
+    width: 32px; height: 32px;
+    background: rgba(232,161,48,0.1);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  /* ---- SECTION ---- */
+  .section {
+    padding: 80px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(32px, 4vw, 48px);
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  .section-desc {
+    color: var(--text-muted);
+    font-size: 15px;
+    max-width: 560px;
+    line-height: 1.75;
+  }
+
+  /* ---- PRODUCTS GRID ---- */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2px;
+    margin-top: 48px;
+  }
+
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 28px 24px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .product-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 2px;
+    background: var(--amber);
+    transition: width 0.3s ease;
+  }
+
+  .product-card:hover { background: var(--surface2); border-color: var(--border); }
+  .product-card:hover::after { width: 100%; }
+
+  .product-icon {
+    font-size: 28px;
+    margin-bottom: 14px;
+    display: block;
+  }
+
+  .product-name {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .product-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .product-arrow {
+    position: absolute;
+    top: 24px; right: 24px;
+    color: var(--text-muted);
+    font-size: 16px;
+    transition: color 0.2s, transform 0.2s;
+  }
+
+  .product-card:hover .product-arrow {
+    color: var(--amber);
+    transform: translate(2px, -2px);
+  }
+
+  /* ---- FEATURED PRODUCTS (detail pages) ---- */
+  .product-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 40px;
+  }
+
+  .product-detail-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 40px;
+  }
+
+  .product-detail-card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .product-detail-card p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.8;
+    margin-bottom: 24px;
+  }
+
+  .feature-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .feature-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .feature-list li::before {
+    content: '✓';
+    color: var(--amber);
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* ---- WHY US ---- */
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 48px;
+  }
+
+  .why-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 36px 32px;
+  }
+
+  .why-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: rgba(232,161,48,0.15);
+    line-height: 1;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .why-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .why-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* ---- CONTACT ---- */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 48px;
+  }
+
+  .contact-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 48px;
+  }
+
+  .contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .contact-icon {
+    width: 42px; height: 42px;
+    background: rgba(232,161,48,0.1);
+    border: 1px solid rgba(232,161,48,0.2);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .contact-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .contact-value {
+    font-size: 15px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .contact-value a {
+    color: var(--amber);
+    text-decoration: none;
+  }
+
+  .hours-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .hours-item {
+    background: var(--surface2);
+    padding: 10px 14px;
+    border-radius: var(--radius);
+  }
+
+  .hours-day {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .hours-time {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  /* ---- FAQ ---- */
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+    padding: 28px 0;
+  }
+
+  .faq-q {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .faq-q::before {
+    content: 'Q';
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--amber);
+    flex-shrink: 0;
+    line-height: 1.2;
+  }
+
+  .faq-a {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    padding-left: 34px;
+  }
+
+  .faq-sub {
+    margin-top: 16px;
+    padding-left: 34px;
+  }
+
+  .faq-sub h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--steel-light);
+    margin-bottom: 8px;
+    margin-top: 16px;
+  }
+
+  .faq-sub ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .faq-sub ul li {
+    font-size: 13px;
+    color: var(--text-muted);
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .faq-sub ul li::before {
+    content: '–';
+    position: absolute;
+    left: 0;
+    color: var(--amber);
+  }
+
+  /* ---- ABOUT ---- */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 48px;
+  }
+
+  .about-text {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 48px;
+  }
+
+  .about-text p {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.85;
+    margin-bottom: 20px;
+  }
+
+  .about-text p:last-child { margin-bottom: 0; }
+
+  .about-highlight {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--text);
+    font-style: italic;
+    border-left: 3px solid var(--amber);
+    padding-left: 20px;
+    margin: 32px 0;
+  }
+
+  .about-stats {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .about-stat {
+    padding: 28px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .about-stat:last-child { border-bottom: none; }
+
+  .about-stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: var(--amber);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .about-stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  /* ---- BUSINESS PAGE ---- */
+  .partner-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    margin-top: 48px;
+  }
+
+  .partner-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 36px;
+    transition: background 0.2s;
+  }
+
+  .partner-card:hover { background: var(--surface2); }
+
+  .partner-icon { font-size: 32px; margin-bottom: 16px; }
+
+  .partner-title {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .partner-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .benefits-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 48px;
+    margin-top: 2px;
+  }
+
+  .benefits-box h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--text);
+    margin-bottom: 28px;
+  }
+
+  .benefits-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    list-style: none;
+  }
+
+  .benefits-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text-muted);
+    padding: 14px 18px;
+    background: var(--surface2);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+
+  .benefits-list li span {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  /* ---- GALLERY ---- */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 40px;
+  }
+
+  .gallery-placeholder {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    aspect-ratio: 4/3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: var(--text-muted);
+    font-size: 13px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s;
+  }
+
+  .gallery-placeholder:hover { background: var(--surface2); }
+
+  .gallery-placeholder .fleet-icon { font-size: 36px; }
+
+  /* ---- PAGE HEADER ---- */
+  .page-header {
+    padding: 60px 40px 48px;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-header-breadcrumb {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    letter-spacing: 0.3px;
+  }
+
+  .page-header-breadcrumb span { color: var(--amber); }
+
+  .page-header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 6vw, 72px);
+    color: var(--text);
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  .page-header-sub {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--amber);
+    margin-top: 6px;
+  }
+
+  /* ---- FOOTER ---- */
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 60px 40px 32px;
+    margin-top: 80px;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 2px;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .footer-logo span { color: var(--amber); }
+
+  .footer-tagline {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 300px;
+  }
+
+  .footer-contact {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .footer-contact a {
+    color: var(--amber);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .footer-contact a:hover { text-decoration: underline; }
+
+  .footer-heading {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--steel);
+    margin-bottom: 20px;
+  }
+
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer-links li a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+
+  .footer-links li a:hover { color: var(--amber); }
+
+  .footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ---- DISCLAIMER BOX ---- */
+  .disclaimer {
+    background: rgba(232,161,48,0.05);
+    border: 1px solid rgba(232,161,48,0.15);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-top: 40px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .disclaimer-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 8px;
+  }
+
+  .disclaimer p {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* ---- CTA BANNER ---- */
+  .cta-banner {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 48px;
+    margin-top: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-banner::before {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 300px;
+    background: radial-gradient(ellipse at right center, rgba(232,161,48,0.07), transparent);
+  }
+
+  .cta-banner-text h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .cta-banner-text p {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .cta-banner-actions {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  /* ---- ALL PRODUCTS PAGE ---- */
+  .all-products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-top: 40px;
+  }
+
+  .all-product-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 28px 24px;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+  }
+
+  .all-product-item:hover { background: var(--surface2); }
+
+  .all-product-item .icon { font-size: 30px; margin-bottom: 12px; }
+  .all-product-item .name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  /* ---- WHATSAPP FLOAT ---- */
+  .whatsapp-float {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 500;
+    background: #25D366;
+    color: white;
+    border-radius: 50%;
+    width: 54px; height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .whatsapp-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 28px rgba(37,211,102,0.6);
+  }
+
+  /* ---- MOBILE NAV ---- */
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .hamburger { display: block; }
+    .nav-links { display: none; }
+
+    .hero { padding: 48px 20px; min-height: auto; }
+    .hero-stats { position: static; margin-top: 40px; flex-wrap: wrap; gap: 24px; }
+    .stat { text-align: left; }
+
+    .trust-bar { padding: 16px 20px; gap: 24px; }
+
+    .section { padding: 48px 20px; }
+    .page-header { padding: 40px 20px 32px; }
+
+    .why-grid { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .about-grid { grid-template-columns: 1fr; }
+    .partner-grid { grid-template-columns: 1fr; }
+    .product-detail { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+    .all-products-grid { grid-template-columns: repeat(2, 1fr); }
+    .gallery-grid { grid-template-columns: 1fr 1fr; }
+
+    .cta-banner { flex-direction: column; padding: 32px 24px; }
+    .cta-banner-actions { flex-direction: column; width: 100%; }
+    .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+
+    .hero-stats { display: none; }
+    .benefits-list { grid-template-columns: 1fr; }
+    footer { padding: 40px 20px 24px; margin-top: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" onclick="showPage('home')">
+    MAMBAKKADANS<span>.</span>IN
+  </a>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home')" id="nav-home" class="active">Home</a></li>
+    <li class="nav-dropdown">
+      <a onclick="showPage('all-products')" id="nav-products">Products ▾</a>
+      <div class="nav-dropdown-menu">
+        <a onclick="showPage('all-products')">All Products</a>
+        <a onclick="showPage('cements')">Cements</a>
+        <a onclick="showPage('steel-rods')">Steel Rods</a>
+        <a onclick="showPage('roofing-sheets')">Roofing Sheets</a>
+        <a onclick="showPage('gi-gp')">GI / GP</a>
+        <a onclick="showPage('gi-mesh')">GI Mesh</a>
+      </div>
+    </li>
+    <li><a onclick="showPage('business')" id="nav-business">Business</a></li>
+    <li><a onclick="showPage('about')" id="nav-about">About Us</a></li>
+    <li><a onclick="showPage('faq')" id="nav-faq">FAQ</a></li>
+    <li><a onclick="showPage('contact')" id="nav-contact">Contact</a></li>
+    <li><a href="https://wa.me/919400415244" target="_blank" class="nav-cta">WhatsApp Us</a></li>
+  </ul>
+  <button class="hamburger" onclick="toggleMobileMenu()">☰</button>
+</nav>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://wa.me/919400415244" target="_blank" class="whatsapp-float" title="Chat on WhatsApp">
+  💬
+</a>
+
+<!-- ======== HOME PAGE ======== -->
+<div id="page-home" class="page active">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid-lines"></div>
+    <div class="hero-content">
+      <div class="hero-tag">Authorized Dalmia Dealers · Est. 2014</div>
+      <h1>
+        MAMBAKKADANS
+        <em>Steels & Cements</em>
+      </h1>
+      <p class="hero-sub">Supplying premium construction materials to builders, villas, and homes across Ernakulam. Quality you can build on, since 2014.</p>
+      <div class="hero-actions">
+        <a href="https://wa.me/919400415244" target="_blank" class="btn-primary">
+          📞 Get Today's Rate
+        </a>
+        <a onclick="showPage('all-products')" class="btn-secondary">
+          View Products →
+        </a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">10<span>+</span></div>
+        <div class="stat-label">Years of Service</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">100<span>+</span></div>
+        <div class="stat-label">Trusted Clients</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRUST BAR -->
+  <div class="trust-bar">
+    <div class="trust-item"><div class="icon">🏆</div> Authorized Dalmia Dealers</div>
+    <div class="trust-item"><div class="icon">🚚</div> Delivery on Request</div>
+    <div class="trust-item"><div class="icon">📦</div> Full Stock Availability</div>
+    <div class="trust-item"><div class="icon">⚡</div> Fast Loading & Dispatch</div>
+    <div class="trust-item"><div class="icon">💰</div> Honest, Competitive Rates</div>
+    <div class="trust-item"><div class="icon">📍</div> Pattimattom, Ernakulam</div>
+  </div>
+
+  <!-- PRODUCTS OVERVIEW -->
+  <div class="section">
+    <div class="section-label">What We Offer</div>
+    <h2 class="section-title">Construction Materials<br>You Can Trust</h2>
+    <p class="section-desc">From cement and TMT bars to GI pipes, roofing sheets, and hardware — we stock everything your project needs.</p>
+
+    <div class="products-grid">
+      <div class="product-card" onclick="showPage('cements')">
+        <span class="product-icon">🏗️</span>
+        <div class="product-name">Cements</div>
+        <div class="product-desc">Dalmia DSP & Dalmia — authorized dealer with assured quality</div>
+        <span class="product-arrow">↗</span>
+      </div>
+      <div class="product-card" onclick="showPage('steel-rods')">
+        <span class="product-icon">⚙️</span>
+        <div class="product-name">Steel Rods / TMT</div>
+        <div class="product-desc">Metcon TMT bars — Kerala's trusted brand since 1995</div>
+        <span class="product-arrow">↗</span>
+      </div>
+      <div class="product-card" onclick="showPage('roofing-sheets')">
+        <span class="product-icon">🏠</span>
+        <div class="product-name">Roofing Sheets</div>
+        <div class="product-desc">JSW Coleron Plus — durable, weather-resistant roofing</div>
+        <span class="product-arrow">↗</span>
+      </div>
+      <div class="product-card" onclick="showPage('gi-gp')">
+        <span class="product-icon">🔩</span>
+        <div class="product-name">GI / GP Pipes</div>
+        <div class="product-desc">Demac GI & GP pipes for all structural needs</div>
+        <span class="product-arrow">↗</span>
+      </div>
+      <div class="product-card" onclick="showPage('gi-mesh')">
+        <span class="product-icon">🕸️</span>
+        <div class="product-name">GI Mesh</div>
+        <div class="product-desc">High-quality galvanized mesh for construction use</div>
+        <span class="product-arrow">↗</span>
+      </div>
+      <div class="product-card" onclick="showPage('all-products')">
+        <span class="product-icon">🔧</span>
+        <div class="product-name">Hardware & More</div>
+        <div class="product-desc">Screws, wire, bricks, gates, thinner & more</div>
+        <span class="product-arrow">↗</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHY US -->
+  <div class="section" style="padding-top:0">
+    <div class="section-label">Why Choose Us</div>
+    <h2 class="section-title">Built on Trust,<br>Delivered with Speed</h2>
+    <div class="why-grid">
+      <div class="why-card">
+        <span class="why-num">01</span>
+        <div class="why-title">Authorized Brand Partner</div>
+        <div class="why-desc">We are authorized dealers for Dalmia Cement — ensuring you get genuine products at competitive rates, every time.</div>
+      </div>
+      <div class="why-card">
+        <span class="why-num">02</span>
+        <div class="why-title">Own Delivery Fleet</div>
+        <div class="why-desc">Our dedicated fleet of trucks enables fast, reliable delivery right to your site — no middlemen, no delays.</div>
+      </div>
+      <div class="why-card">
+        <span class="why-num">03</span>
+        <div class="why-title">10+ Years of Experience</div>
+        <div class="why-desc">Since 2014, we've been the go-to supplier for builders, villas, and infrastructure projects across the region.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer" style="margin: 0 40px 0; max-width: calc(1200px)">
+    <div class="disclaimer-title">📌 Disclaimer</div>
+    <p>Prices listed are indicative and may be subject to change based on market fluctuations. Delivery charges are applicable based on distance and order volume. For bulk orders or products not listed, please contact us directly at <strong>9961745244</strong> or via WhatsApp.</p>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-banner" style="margin: 40px 40px 0">
+    <div class="cta-banner-text">
+      <h3>Ready to place an order?</h3>
+      <p>Get today's rates and availability on WhatsApp — we respond fast.</p>
+    </div>
+    <div class="cta-banner-actions">
+      <a href="https://wa.me/919400415244" target="_blank" class="btn-primary">💬 WhatsApp Us</a>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSetZy5whn-s3pL7h76Dt2WbjLeTFKUjubNw3uaUpy0fdcJVgw/viewform?usp=header" target="_blank" class="btn-secondary">Quick Inquiry Form</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ======== ALL PRODUCTS PAGE ======== -->
+<div id="page-all-products" class="page">
+  <div class="page-header">
+    <div class="page-header-breadcrumb">Home › <span>Products</span></div>
+    <h1>ALL PRODUCTS</h1>
+    <div class="page-header-sub">Everything you need for your build</div>
+  </div>
+  <div class="section">
+    <p class="section-desc" style="margin-bottom:0">Browse our complete range of construction materials. Click on any category to learn more, or contact us directly for availability and pricing.</p>
+    <div class="all-products-grid">
+      <div class="all-product-item" onclick="showPage('cements')"><div class="icon">🏗️</div><div class="name">Cement</div></div>
+      <div class="all-product-item" onclick="showPage('steel-rods')"><div class="icon">⚙️</div><div class="name">TMT Bars</div></div>
+      <div class="all-product-item" onclick="showPage('gi-gp')"><div class="icon">🔩</div><div class="name">GI Pipes</div></div>
+      <div class="all-product-item" onclick="showPage('gi-gp')"><div class="icon">🪣</div><div class="name">GP Pipes</div></div>
+      <div class="all-product-item"><div class="icon">🧱</div><div class="name">Bricks</div></div>
+      <div class="all-product-item"><div class="icon">📐</div><div class="name">Flat Steel</div></div>
+      <div class="all-product-item" onclick="showPage('roofing-sheets')"><div class="icon">🏠</div><div class="name">Roofing Sheet</div></div>
+      <div class="all-product-item"><div class="icon">🌧️</div><div class="name">Roofing Gutter</div></div>
+      <div class="all-product-item"><div class="icon">🚪</div><div class="name">Tata Pravish Metal Doors</div></div>
+      <div class="all-product-item" onclick="showPage('gi-mesh')"><div class="icon">🕸️</div><div class="name">GI Mesh</div></div>
+      <div class="all-product-item"><div class="icon">🪙</div><div class="name">Steel Coil</div></div>
+      <div class="all-product-item"><div class="icon">🧴</div><div class="name">Thinner</div></div>
+      <div class="all-product-item"><div class="icon">🔗</div><div class="name">Gate Fittings</div></div>
+      <div class="all-product-item"><div class="icon">🪛</div><div class="name">Screws</div></div>
+      <div class="all-product-item"><div class="icon">🔨</div><div class="name">Hardware Items</div></div>
+      <div class="all-product-item"><div class="icon">🪡</div><div class="name">Wire</div></div>
+    </div>
+    <div class="cta-banner" style="margin-top:40px">
+      <div class="cta-banner-text">
+        <h3>Don't see what you need?</h3>
+        <p>Contact us directly — we source a wide range of materials.</p>
+      </div>
+      <div class="cta-banner-actions">
+        <a href="https://wa.me/919400415244" target="_blank" class="btn-primary">💬 Ask on WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== CEMENTS PAGE ======== -->
+<div id="page-cements" class="page">
+  <div class="page-header">
+    <div class="page-header-breadcrumb">Home › Products › <span>Cements</span></div>
+    <h1>CEMENTS</h1>
+    <div class="page-header-sub">Authorized Dalmia Dealers — assured quality, better rates</div>
+  </div>
+  <div class="section">
+    <div class="product-detail">
+      <div class="product-detail-card">
+        <div style="font-size:40px;margin-bottom:20px">🏗️</div>
+        <h3>Dalmia DSP</h3>
+        <p>Dalmia DSP (Dhalai Special) Cement is a specialized cement formulated specifically for concrete applications requiring high strength — ideal for foundations, columns, and slabs.</p>
+        <ul class="feature-list">
+          <li>Engineered for high-strength concrete work</li>
+          <li>Ideal for foundations, columns & slabs</li>
+          <li>Consistent mix for structural integrity</li>
+          <li>Authorized dealer — genuine product guaranteed</li>
+        </ul>
+      </div>
+      <div class="product-detail-card">
+        <div style="font-size:40px;margin-bottom:20px">🧱</div>
+        <h3>Dalmia Cement</h3>
+        <p>Dalmia cement is used for a wide range of construction applications, including foundations, walls, roofs, and other structures. A versatile, trusted choice for all builds.</p>
+        <ul class="feature-list">
+          <li>Wide-range construction applications</li>
+          <li>Suitable for walls, roofs, flooring</li>
+          <li>Reliable quality at competitive rates</li>
+          <li>Available in bulk quantities</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cta-banner" style="margin-top:40px">
+      <div class="cta-banner-text">
+        <h3>Get today's cement price</h3>
+        <p>Rates updated daily — WhatsApp us for instant pricing.</p>
+      </div>
+      <div class="cta-banner-actions">
+        <a href="https://wa.me/919400415244" target="_blank" class="btn-primary">💬 WhatsApp for Rate</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSetZy5whn-s3pL7h76Dt2WbjLeTFKUjubNw3uaUpy0fdcJVgw/viewform?usp=header" target="_blank" class="btn-secondary">Inquiry Form</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== STEEL RODS PAGE ======== -->
+<div id="page-steel-rods" class="page">
+  <div class="page-header">
+    <div class="page-header-breadcrumb">Home › Products › <span>Steel Rods</span></div>
+    <h1>STEEL RODS</h1>
+    <div class="page-header-sub">Metcon TMT — the strength behind every structure</div>
+  </div>
+  <div class="section">
+    <div class="product-detail" style="grid-template-columns:1fr">
+      <div class="product-detail-card">
+        <div style="font-size:40px;margin-bottom:20px">⚙️</div>
+        <h3>Metcon TMT Bars</h3>
+        <p>Metcon TMT, the flagship brand of Metrolla Steels Limited, is one of Kerala's most trusted names in premium TMT bars. Established in 1995, Metcon has earned its reputation through consistent quality, cutting-edge technology, and a strong dealer network across the state.</p>
+        <p>At Mambakkadans Steels and Cements, we proudly supply Metcon TMT bars in various sizes, offering reliable quality, consistent supply, and competitive rates. Whether you're building your dream home or managing a large-scale infrastructure project, Metcon TMT provides the strong foundation your structure deserves.</p>
+        <ul class="feature-list" style="columns:2;gap:16px">
+          <li>Available in various sizes</li>
+          <li>High tensile strength</li>
+          <li>Earthquake-resistant design</li>
+          <li>Corrosion-resistant coating</li>
+          <li>Consistent quality batches</li>
+          <li>Competitive market rates</li>
+          <li>Bulk order capability</li>
+          <li>Fast loading & dispatch</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cta-banner" style="margin-top:40px">
+      <div class="cta-banner-text">
+        <h3>Get TMT bar rates & sizes</h3>
+        <p>Contact us for current pricing and available diameters.</p>
+      </div>
+      <div class="cta-banner-actions">
+        <a href="https://wa.me/919400415244" target="_blank" class="btn-primary">💬 WhatsApp Us</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSetZy5whn-s3pL7h76Dt2WbjLeTFKUjubNw3uaUpy0fdcJVgw/viewform?usp=header" target="_blank" class="btn-secondary">Inquiry Form</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== ROOFING SHEETS PAGE ======== -->
+<div id="page-roofing-sheets" class="page">
+  <div class="page-header">
+    <div class="page-header-breadcrumb">Home › Products › <span>Roofing Sheets</span></div>
+    <h1>ROOFING SHEETS</h1>
+    <div class="page-header-sub">JSW Coleron Plus — trusted by builders across Kerala</div>
+  </div>
+  <div class="section">
+    <div class="product-detail" style="grid-template-columns:1fr">
+      <div class="product-detail-card">
+        <div style="font-size:40px;margin-bottom:20px">🏠</div>
+        <h3>JSW Coleron Plus</h3>
+        <p>Coleron Plus sheets are high-quality roofing sheets designed for long-term performance, especially suited for industrial, commercial, and residential applications. Known for their excellent strength-to-weight ratio, they offer enhanced protection against harsh weather, corrosion, and fire.</p>
+        <ul class="feature-list">
+          <li>Superior heat and UV resistance</li>
+          <li>Anti-corrosion coating for longer life</li>
+          <li>Lightweight and easy to install</li>
+          <li>Ideal for warehouses, sheds, and home rooftops</li>
+          <li>Available in various lengths and gauges</li>
+          <li>Durable, weather-resistant, cost-effective</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cta-banner" style="margin-top:40px">
+      <div class="cta-banner-text">
+        <h3>Get the best roofing deals</h3>
+        <p>Ask for bulk pricing and available sheet dimensions.</p>
+      </div>
+      <div class="cta-banner-actions">
+        <a href="https://wa.me/919400415244" target="_blank" class="btn-primary">💬 WhatsApp Us</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSetZy5whn-s3pL7h76Dt2WbjLeTFKUjubNw3uaUpy0fdcJVgw/viewform?usp=header" target="_blank" class="btn-secondary">Inquiry Form</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== GI/GP PAGE ======== -->
+<div id="page-gi-gp" class="page">
+  <div class="page-header">
+    <div class="page-header-breadcrumb">Home › Products › <span>GI / GP</span></div>
+    <h1>GI / GP PIPES</h1>
+    <div class="page-header-sub">Demac GP and GI Pipes & Tubes</div>
+  </div>
+  <div class="section">
+    <div class="product-detail">
+      <div class="product-detail-card">
+        <div style="font-size:40px;margin-bottom:20px">🔩</div>
+        <h3>GI Pipes</h3>
+        <p>Galvanized Iron Pipes — made from iron or steel with a thick hot-dip galvanized zinc coating for superior corrosion resistance.</p>
+        <ul class="feature-list">
+          <li>Thick zinc coating via hot-dip galvanization</li>
+          <li>Superior corrosion & rust resistance</li>
+          <li>Heavy-duty structural applications</li>
+          <li>Water supply systems & plumbing</li>
+          <li>Oil & gas industry use</li>
+          <li>Long service life in harsh environments</li>
+        </ul>
+      </div>
+      <div class="product-detail-card">
+        <div style="font-size:40px;margin-bottom:20px">🪣</div>
+        <h3>GP Pipes</h3>
+        <p>Galvanized Pipes — made from pre-galvanized steel sheets with a thinner zinc coating. Lighter and easier to handle, ideal for less demanding applications.</p>
+        <ul class="feature-list">
+          <li>Pre-galvanized steel construction</li>
+          <li>Lightweight & easy installation</li>
+          <li>Suitable for fencing & scaffolding</li>
+          <li>Agricultural irrigation systems</li>
+          <li>Cost-effective for standard applications</li>
+          <li>Good corrosion resistance</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cta-banner" style="margin-top:40px">
+      <div class="cta-banner-text">
+        <h3>Need GI or GP pipes?</h3>
+        <p>Available in multiple sizes — contact us for current stock and pricing.</p>
+      </div>
+      <div class="cta-banner-actions">
+        <a href="https://wa.me/919400415244" target="_blank" class="btn-primary">💬 WhatsApp Us</a>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSetZy5whn-s3pL7h76Dt2WbjLeTFKUjubNw3uaUpy0fdcJVgw/viewform?usp=header" target="_blank" class="btn-secondary">Inquiry Form</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== GI MESH PAGE ======== -->
+<div id="page-gi-mesh" class="page">
+  <div class="page-header">
+    <div class="page-header-breadcrumb">Home › Products › <span>GI Mesh</span></div>
+    <h1>GI MESH</h1>
+    <div class="page-header-sub">Galvanized iron mesh for construction & reinforcement</div>
+  </div>
+  <div class="section">
+    <div class="product-detail" style="grid-template-columns:1fr">
+      <div class="product-detail-card">
+        <div style="font-size:40px;margin-bottom:20px">🕸️</div>
+        <h3>GI Mesh</h3>
+        <p>High-quality galvanized iron mesh suitable for a wide range of construction, reinforcement, and protective applications. Available in various gauges and mesh sizes to suit your specific project requirements.</p>
+        <ul class="feature-list">
+          <li>Galvanized for corrosion resistance</li>
+          <li>Construction reinforcement use</li>
+          <li>Plastering & rendering backing</li>
+          <li>Fencing and enclosures</li>
+          <li>Available in multiple gauges</li>
+          <li>Competitive bulk pricing</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cta-banner" style="margin-top:40px">
+      <div class="cta-banner-text">
+        <h3>GI Mesh enquiry</h3>
+        <p>Contact us for specifications and pricing.</p>
+      </div>
+      <div class="cta-banner-actions">
+        <a href="https://wa.me/919400415244" target="_blank" class="btn-primary">💬 WhatsApp Us</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== BUSINESS PAGE ======== -->
+<div id="page-business" class="page">
+  <div class="page-header">
+    <div class="page-header-breadcrumb">Home › <span>Business Inquiries</span></div>
+    <h1>BUSINESS INQUIRIES</h1>
+    <div class="page-header-sub">Let's build something together</div>
+  </div>
+  <div class="section">
+    <div class="section-label">Partnership Opportunities</div>
+    <h2 class="section-title">Join the Mambakkadans Network</h2>
+    <p class="section-desc">We offer collaboration opportunities for businesses and individuals looking to partner with a trusted construction materials supplier.</p>
+
+    <div class="partner-grid">
+      <div class="partner-card">
+        <div class="partner-icon">🏪</div>
+        <div class="partner-title">Sub-dealers & Resellers</div>
+        <div class="partner-desc">Expand your business by reselling our trusted range of construction materials. Get access to competitive wholesale pricing.</div>
+      </div>
+      <div class="partner-card">
+        <div class="partner-icon">🏗️</div>
+        <div class="partner-title">Construction Contractors</div>
+        <div class="partner-desc">Reliable, on-time supply of all your project materials. We support large and small-scale projects with consistent quality.</div>
+      </div>
+      <div class="partner-card">
+        <div class="partner-icon">📦</div>
+        <div class="partner-title">Bulk Buyers & Builders</div>
+        <div class="partner-desc">Special rates for bulk orders. Whether you're building a single home or a residential complex, we have the volume capability.</div>
+      </div>
+      <div class="partner-card">
+        <div class="partner-icon">🚛</div>
+        <div class="partner-title">Transport & Logistics Partners</div>
+        <div class="partner-desc">Looking to collaborate on logistics and material transport? We're open to building partnerships that benefit both sides.</div>
+      </div>
+    </div>
+
+    <div class="benefits-box">
+      <h3>What Our Partners Benefit From</h3>
+      <ul class="benefits-list">
+        <li><span>💰</span> Competitive Pricing</li>
+        <li><span>📦</span> Reliable Stock Availability</li>
+        <li><span>🚚</span> Priority Delivery</li>
+        <li><span>🏆</span> Strong Brand Associations</li>
+      </ul>
+    </div>
+
+    <div class="cta-banner" style="margin-top:40px">
+      <div class="cta-banner-text">
+        <h3>Interested in partnering with us?</h3>
+        <p>Fill out our collaboration form or get in touch directly.</p>
+      </div>
+      <div class="cta-banner-actions">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSciyxzZtv2UAWSI_ueK_klAovdW77pDeG2_t1K5aVQBCTiaLQ/viewform?usp=dialog" target="_blank" class="btn-primary">📋 Business Form</a>
+        <a href="https://wa.me/919400415244" target="_blank" class="btn-secondary">💬 WhatsApp Us</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== ABOUT PAGE ======== -->
+<div id="page-about" class="page">
+  <div class="page-header">
+    <div class="page-header-breadcrumb">Home › <span>About Us</span></div>
+    <h1>ABOUT US</h1>
+    <div class="page-header-sub">A decade of strength and trust</div>
+  </div>
+  <div class="section">
+    <div class="about-grid">
+      <div class="about-text">
+        <div class="section-label">Our Story</div>
+        <h2 class="section-title" style="font-size:32px">Mambakkadans Steels & Cements</h2>
+        <div class="about-highlight">"Fast delivery of construction materials in a cost-efficient manner."</div>
+        <p>Established in 2014 by Shyju Mambakkadan, Mambakkadan's Steels and Cement has grown to become a trusted name in the supply of high-quality construction materials across the region. With over a decade of experience, we are committed to supporting your building journey with reliability, efficiency, and affordability.</p>
+        <p>We are proud authorized partners of reputed brands like Dalmia Cement, ensuring that you receive only the best products at competitive rates. Our dedicated logistics support — including our own fleet of trucks — allows us to deliver materials quickly and on time, no matter the size of the order.</p>
+        <p>Whether you're building a home or managing a large-scale project, Mambakkadan's is here to supply the strength behind your structure.</p>
+      </div>
+      <div class="about-stats">
+        <div class="about-stat">
+          <div class="about-stat-num">2014</div>
+          <div class="about-stat-label">Year Established</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-num">10+</div>
+          <div class="about-stat-label">Years in Business</div>
+        </div>
+        <div class="about-stat">
+          <div class="about-stat-num">100+</div>
+          <div class="about-stat-label">Trusted Clients</div>
+        </div>
+        <div class="about-stat" style="border-bottom:none">
+          <div class="about-stat-num" style="font-size:32px; line-height:1.3">Dalmia</div>
+          <div class="about-stat-label">Authorized Dealer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== FAQ PAGE ======== -->
+<div id="page-faq" class="page">
+  <div class="page-header">
+    <div class="page-header-breadcrumb">Home › More › <span>FAQ</span></div>
+    <h1>FAQ</h1>
+    <div class="page-header-sub">Common questions answered</div>
+  </div>
+  <div class="section">
+    <div class="faq-item">
+      <div class="faq-q">What is the difference between GI and GP pipes?</div>
+      <div class="faq-a">
+        GI and GP pipes are both galvanized steel pipes, but differ in how and when the zinc coating is applied — affecting thickness, durability, and ideal use cases.
+      </div>
+      <div class="faq-sub">
+        <h4>GI Pipes (Galvanized Iron Pipes)</h4>
+        <ul>
+          <li>Made from iron or steel, coated with a thick layer of zinc via hot-dip galvanization — submerging in molten zinc</li>
+          <li>Thick coating offers superior corrosion resistance and durability in harsh environments</li>
+          <li>Common uses: water supply systems, structural support in buildings & bridges, oil & gas industry</li>
+        </ul>
+        <h4>GP Pipes (Galvanized Pipes)</h4>
+        <ul>
+          <li>Made from pre-galvanized steel sheets — zinc coating applied before the pipe is formed</li>
+          <li>Generally thinner zinc layer; lighter in weight for easier handling and installation</li>
+          <li>Common uses: fencing, scaffolding, agricultural irrigation systems</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Do you offer delivery services?</div>
+      <div class="faq-a">Yes! We have our own fleet of trucks and offer delivery on request. Delivery charges are applicable based on distance and order volume. Contact us for a delivery quote.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Are your prices fixed?</div>
+      <div class="faq-a">Prices are indicative and subject to market fluctuations. We recommend contacting us directly on WhatsApp or by phone for the most current rates before placing an order.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">Do you handle bulk orders?</div>
+      <div class="faq-a">Absolutely. We regularly supply bulk quantities to contractors, builders, and infrastructure projects. Contact us for special bulk pricing and availability.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q">What brands do you carry?</div>
+      <div class="faq-a">We are authorized dealers for Dalmia Cement and carry Metcon TMT bars, JSW Coleron Plus roofing sheets, and Demac GI/GP pipes, among many other products.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== CONTACT PAGE ======== -->
+<div id="page-contact" class="page">
+  <div class="page-header">
+    <div class="page-header-breadcrumb">Home › More › <span>Contact Us</span></div>
+    <h1>CONTACT US</h1>
+    <div class="page-header-sub">We're here to help — reach us anytime</div>
+  </div>
+  <div class="section">
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="section-label" style="margin-bottom:32px">Get in Touch</div>
+
+        <div class="contact-item">
+          <div class="contact-icon">📞</div>
+          <div>
+            <div class="contact-label">Phone</div>
+            <div class="contact-value"><a href="tel:+919961745244">+91 9961745244</a></div>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon">💬</div>
+          <div>
+            <div class="contact-label">WhatsApp</div>
+            <div class="contact-value"><a href="https://wa.me/919400415244" target="_blank">+91 9400415244 — Chat Now</a></div>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon">📧</div>
+          <div>
+            <div class="contact-label">Email</div>
+            <div class="contact-value"><a href="mailto:mambakkadans2014@gmail.com">mambakkadans2014@gmail.com</a></div>
+          </div>
+        </div>
+
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <div>
+            <div class="contact-label">Address</div>
+            <div class="contact-value">Double Palam, Pattimattom<br>Ernakulam, Kerala — PIN 683562</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-card">
+        <div class="section-label" style="margin-bottom:32px">Business Hours</div>
+
+        <div class="hours-grid">
+          <div class="hours-item">
+            <div class="hours-day">Monday</div>
+            <div class="hours-time">7:00 AM – 6:30 PM</div>
+          </div>
+          <div class="hours-item">
+            <div class="hours-day">Tuesday</div>
+            <div class="hours-time">7:00 AM – 6:30 PM</div>
+          </div>
+          <div class="hours-item">
+            <div class="hours-day">Wednesday</div>
+            <div class="hours-time">7:00 AM – 6:30 PM</div>
+          </div>
+          <div class="hours-item">
+            <div class="hours-day">Thursday</div>
+            <div class="hours-time">7:00 AM – 6:30 PM</div>
+          </div>
+          <div class="hours-item">
+            <div class="hours-day">Friday</div>
+            <div class="hours-time">7:00 AM – 6:30 PM</div>
+          </div>
+          <div class="hours-item">
+            <div class="hours-day">Saturday</div>
+            <div class="hours-time">7:00 AM – 6:30 PM</div>
+          </div>
+          <div class="hours-item" style="grid-column:1/-1; background:rgba(232,161,48,0.08); border:1px solid rgba(232,161,48,0.15)">
+            <div class="hours-day">Sunday</div>
+            <div class="hours-time" style="color:var(--text-muted)">Closed</div>
+          </div>
+        </div>
+
+        <div style="margin-top:36px">
+          <div class="contact-label" style="margin-bottom:16px">Quick Actions</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <a href="https://wa.me/919400415244" target="_blank" class="btn-primary" style="justify-content:center">💬 Chat on WhatsApp</a>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSetZy5whn-s3pL7h76Dt2WbjLeTFKUjubNw3uaUpy0fdcJVgw/viewform?usp=header" target="_blank" class="btn-secondary" style="justify-content:center">📋 Quick Inquiry Form</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======== GALLERY PAGE ======== -->
+<div id="page-gallery" class="page">
+  <div class="page-header">
+    <div class="page-header-breadcrumb">Home › More › <span>Gallery</span></div>
+    <h1>GALLERY</h1>
+    <div class="page-header-sub">Our fleet & operations</div>
+  </div>
+  <div class="section">
+    <div class="section-label">Our Fleet</div>
+    <p class="section-desc">We maintain our own fleet of delivery vehicles to ensure timely, reliable material delivery to your construction site.</p>
+    <div class="gallery-grid">
+      <div class="gallery-placeholder">
+        <div class="fleet-icon">🚛</div>
+        <div style="font-weight:600;color:var(--text)">Delivery Truck 1</div>
+      </div>
+      <div class="gallery-placeholder">
+        <div class="fleet-icon">🚛</div>
+        <div style="font-weight:600;color:var(--text)">Delivery Truck 2</div>
+      </div>
+      <div class="gallery-placeholder">
+        <div class="fleet-icon">🚛</div>
+        <div style="font-weight:600;color:var(--text)">Delivery Truck 3</div>
+      </div>
+      <div class="gallery-placeholder">
+        <div class="fleet-icon">🏪</div>
+        <div style="font-weight:600;color:var(--text)">Our Store</div>
+      </div>
+      <div class="gallery-placeholder">
+        <div class="fleet-icon">📦</div>
+        <div style="font-weight:600;color:var(--text)">Material Stock</div>
+      </div>
+      <div class="gallery-placeholder">
+        <div class="fleet-icon">🏗️</div>
+        <div style="font-weight:600;color:var(--text)">Project Site</div>
+      </div>
+    </div>
+    <p style="color:var(--text-muted);font-size:13px;margin-top:20px;text-align:center">Gallery images from the original site are preserved in the live Google Sites version.</p>
+  </div>
+</div>
+
+<!-- ======== FOOTER ======== -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">MAMBAKKADANS<span>.</span>IN</div>
+      <p class="footer-tagline">Mambakkadans Steels and Cements — supplying quality construction materials to builders, villas, and homes since 2014. Authorized Dalmia Dealers.</p>
+      <div class="footer-contact">
+        <a href="tel:+919961745244">📞 +91 9961745244</a>
+        <a href="https://wa.me/919400415244" target="_blank">💬 WhatsApp: 9400415244</a>
+        <a href="mailto:mambakkadans2014@gmail.com">📧 mambakkadans2014@gmail.com</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-heading">Products</div>
+      <ul class="footer-links">
+        <li><a onclick="showPage('cements')">Cements</a></li>
+        <li><a onclick="showPage('steel-rods')">Steel Rods / TMT</a></li>
+        <li><a onclick="showPage('roofing-sheets')">Roofing Sheets</a></li>
+        <li><a onclick="showPage('gi-gp')">GI / GP Pipes</a></li>
+        <li><a onclick="showPage('gi-mesh')">GI Mesh</a></li>
+        <li><a onclick="showPage('all-products')">All Products</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">Company</div>
+      <ul class="footer-links">
+        <li><a onclick="showPage('home')">Home</a></li>
+        <li><a onclick="showPage('about')">About Us</a></li>
+        <li><a onclick="showPage('business')">Business Inquiries</a></li>
+        <li><a onclick="showPage('faq')">FAQ</a></li>
+        <li><a onclick="showPage('contact')">Contact Us</a></li>
+        <li><a onclick="showPage('gallery')">Gallery</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2025 Mambakkadan's Steels and Cement | Proprietor: Shyju Mambakkadan | All rights reserved.</div>
+    <div>Double Palam, Pattimattom, Ernakulam — PIN 683562</div>
+  </div>
+</footer>
+
+<script>
+  const pages = ['home','all-products','cements','steel-rods','roofing-sheets','gi-gp','gi-mesh','business','about','faq','contact','gallery'];
+  const navMap = { 'home':'home','all-products':'products','cements':'products','steel-rods':'products','roofing-sheets':'products','gi-gp':'products','gi-mesh':'products','business':'business','about':'about','faq':'faq','contact':'contact','gallery':'contact' };
+
+  function showPage(id) {
+    pages.forEach(p => {
+      const el = document.getElementById('page-' + p);
+      if (el) el.classList.remove('active');
+    });
+    const target = document.getElementById('page-' + id);
+    if (target) {
+      target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    // Update nav active state
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    const navId = 'nav-' + (navMap[id] || id);
+    const activeNav = document.getElementById(navId);
+    if (activeNav) activeNav.classList.add('active');
+  }
+
+  function toggleMobileMenu() {
+    const links = document.querySelector('.nav-links');
+    if (links.style.display === 'flex') {
+      links.style.display = 'none';
+    } else {
+      links.style.display = 'flex';
+      links.style.flexDirection = 'column';
+      links.style.position = 'absolute';
+      links.style.top = '64px';
+      links.style.left = '0';
+      links.style.right = '0';
+      links.style.background = 'var(--surface)';
+      links.style.padding = '16px';
+      links.style.borderBottom = '1px solid var(--border)';
+      links.style.zIndex = '999';
+      links.style.gap = '4px';
+    }
+  }
+
+  // Close mobile menu when clicking a link
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => {
+      const links = document.querySelector('.nav-links');
+      if (window.innerWidth <= 768) links.style.display = 'none';
+    });
+  });
+</script>
+
+</body>
+</html>

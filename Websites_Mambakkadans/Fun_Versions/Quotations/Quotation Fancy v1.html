@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mambakkadans Steels & Cements</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg:        #111418;
+    --surface:   #181c22;
+    --surface2:  #1e232b;
+    --surface3:  #252b35;
+    --border:    #2c333f;
+    --amber:     #f59e0b;
+    --amber-dim: #92600a;
+    --amber-glow:#fbbf24;
+    --steel:     #94a3b8;
+    --text:      #e2e8f0;
+    --muted:     #64748b;
+    --white:     #ffffff;
+    --gp-color:  #3b82f6;
+    --gi-color:  #10b981;
+    --danger:    #ef4444;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    color: var(--text);
+    padding: 0 0 80px;
+}
+
+/* ── HERO HEADER ── */
+.hero {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(245,158,11,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245,158,11,0.04) 1px, transparent 1px);
+    background-size: 36px 36px;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent 0%, var(--amber) 30%, var(--amber-glow) 50%, var(--amber) 70%, transparent 100%);
+}
+
+.hero-inner {
+    max-width: 1080px;
+    margin: auto;
+    padding: 48px 40px 40px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.brand-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.1s forwards;
+}
+
+.brand-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 2px;
+    background: var(--amber);
+    border-radius: 2px;
+}
+
+.brand-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    line-height: 0.88;
+    color: var(--white);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.2s forwards;
+}
+
+.brand-name span { color: var(--amber); }
+
+.brand-tagline {
+    font-size: 12px;
+    color: var(--steel);
+    margin-top: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.3s forwards;
+}
+
+.hero-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.35s forwards;
+}
+
+.hero-badge {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 22px;
+    text-align: center;
+}
+
+.hero-badge-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+.hero-badge-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    color: var(--amber);
+    letter-spacing: 2px;
+    margin-top: 2px;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── MAIN WRAPPER ── */
+.main {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 32px 40px 0;
+}
+
+/* ── SECTION LABEL ── */
+.section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+/* ── CUSTOMER CARD ── */
+.customer-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    display: grid;
+    grid-template-columns: 2.2fr 1fr 1fr 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.4s forwards;
+}
+
+.input-group { display: flex; flex-direction: column; gap: 6px; }
+
+.input-group label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+.input-group input,
+.input-group select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    border-color: var(--amber);
+    box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
+}
+
+.input-group input::placeholder { color: var(--muted); }
+
+#rate-gp, #rate-gi {
+    color: var(--amber-glow);
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+}
+
+/* ── TABS CARD ── */
+.tabs-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.5s forwards;
+}
+
+.tabs-nav {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+}
+
+.tab-btn {
+    padding: 15px 32px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tab-btn .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    transition: transform 0.2s;
+}
+
+.tab-btn.gp-tab .dot { background: var(--gp-color); }
+.tab-btn.gi-tab .dot { background: var(--gi-color); }
+.tab-btn.active .dot { transform: scale(1.4); }
+
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--white); border-bottom-color: var(--amber); }
+
+.tab-content { display: none; padding: 24px; }
+.tab-content.active { display: block; }
+
+/* ── PRODUCT GRID ── */
+.product-grid {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.grid-3 { grid-template-columns: 2.5fr 1fr 1fr; }
+.grid-2 { grid-template-columns: 2.5fr 1fr; }
+
+/* ── GAUGE TOGGLE ── */
+.gauge-toggle { display: flex; gap: 8px; }
+
+.gauge-btn {
+    flex: 1;
+    padding: 10px 0;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.18s;
+    letter-spacing: 1px;
+}
+
+.gauge-btn.active {
+    background: var(--gp-color);
+    border-color: var(--gp-color);
+    color: #fff;
+    box-shadow: 0 0 16px rgba(59,130,246,0.25);
+}
+
+.gauge-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+/* ── BUTTONS ── */
+.action-row { display: flex; gap: 12px; }
+
+.btn-add {
+    flex: 1;
+    padding: 13px 24px;
+    background: var(--amber);
+    color: #0f0f0f;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-add:hover {
+    background: var(--amber-glow);
+    box-shadow: 0 0 24px rgba(245,158,11,0.35);
+    transform: translateY(-1px);
+}
+
+.btn-reset {
+    padding: 13px 20px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+}
+
+.btn-reset:hover { border-color: var(--danger); color: var(--danger); }
+
+/* ── TABLE ── */
+.table-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.55s forwards;
+}
+
+.table-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+}
+
+.table-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+.item-counter {
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--amber);
+}
+
+table { width: 100%; border-collapse: collapse; }
+
+thead tr { background: var(--surface3); }
+
+th {
+    padding: 11px 16px;
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 400;
+    border-bottom: 1px solid var(--border);
+}
+
+td {
+    padding: 13px 16px;
+    font-size: 14px;
+    color: var(--text);
+    border-bottom: 1px solid rgba(44,51,63,0.5);
+}
+
+tbody tr:last-child td { border-bottom: none; }
+tbody tr { transition: background 0.15s; }
+tbody tr:hover td { background: rgba(245,158,11,0.03); }
+
+.cat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 5px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+.cat-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+}
+
+.badge-gp { background: rgba(59,130,246,0.12); color: #60a5fa; }
+.badge-gp::before { background: #60a5fa; }
+.badge-gi { background: rgba(16,185,129,0.12); color: #34d399; }
+.badge-gi::before { background: #34d399; }
+
+.amount-cell {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--white);
+    text-align: right;
+}
+
+.btn-del {
+    background: none;
+    border: none;
+    color: var(--border);
+    cursor: pointer;
+    font-size: 13px;
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.btn-del:hover { background: rgba(239,68,68,0.12); color: var(--danger); }
+
+.empty-state {
+    padding: 52px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.empty-icon { font-size: 38px; margin-bottom: 10px; opacity: 0.35; }
+
+/* ── TOTALS ── */
+.totals-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.6s forwards;
+}
+
+.totals-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid var(--border);
+}
+
+.stat-cell {
+    padding: 20px 24px;
+    border-right: 1px solid var(--border);
+}
+
+.stat-cell:last-child { border-right: none; }
+
+.stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    color: var(--white);
+    letter-spacing: 1px;
+}
+
+.totals-grand {
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, rgba(245,158,11,0.07) 0%, rgba(245,158,11,0.02) 100%);
+}
+
+.grand-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--amber);
+    text-transform: uppercase;
+}
+
+.grand-amount {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 50px;
+    color: var(--amber);
+    letter-spacing: 2px;
+    line-height: 1;
+}
+
+/* ── PDF BUTTON ── */
+.btn-pdf {
+    width: 100%;
+    margin-top: 4px;
+    padding: 18px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease 0.65s forwards;
+}
+
+.btn-pdf:hover {
+    border-color: var(--amber);
+    color: var(--amber);
+    box-shadow: 0 0 30px rgba(245,158,11,0.12), inset 0 0 30px rgba(245,158,11,0.03);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .hero-inner { flex-direction: column; align-items: flex-start; padding: 30px 20px 28px; }
+    .brand-name { font-size: 44px; }
+    .main { padding: 24px 16px 0; }
+    .customer-card { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .totals-stats { grid-template-columns: 1fr; }
+    .stat-cell { border-right: none; border-bottom: 1px solid var(--border); }
+    .grand-amount { font-size: 36px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HERO ── -->
+<div class="hero">
+    <div class="hero-inner">
+        <div class="brand-block">
+            <div class="brand-eyebrow">Construction Materials Supplier</div>
+            <div class="brand-name">Mamba<span>kkadans</span><br>Steels &amp; Cements</div>
+            <div class="brand-tagline">Strength You Can Build On</div>
+        </div>
+        <div class="hero-meta">
+            <div class="hero-badge">
+                <div class="hero-badge-label">Document Type</div>
+                <div class="hero-badge-val">Quotation</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main">
+
+    <!-- Customer Details -->
+    <div class="section-label" style="margin-top: 4px;">Customer Details</div>
+    <div class="customer-card">
+        <div class="input-group">
+            <label>Customer Name</label>
+            <input type="text" id="customer" placeholder="Enter customer name">
+        </div>
+        <div class="input-group">
+            <label>Date</label>
+            <input type="date" id="date">
+        </div>
+        <div class="input-group">
+            <label>GP Rate (₹/kg)</label>
+            <input type="number" id="rate-gp" value="74" oninput="recalcAll()">
+        </div>
+        <div class="input-group">
+            <label>GI Rate (₹/kg)</label>
+            <input type="number" id="rate-gi" value="80" oninput="recalcAll()">
+        </div>
+        <div class="input-group">
+            <label>Freight / Coolie (₹)</label>
+            <input type="number" id="freight" value="0" oninput="updateTotals()">
+        </div>
+    </div>
+
+    <!-- Add Products -->
+    <div class="section-label">Add Products</div>
+    <div class="tabs-card">
+        <div class="tabs-nav">
+            <button class="tab-btn gp-tab active" onclick="switchTab('gp', this)">
+                <span class="dot"></span> GP Pipes
+            </button>
+            <button class="tab-btn gi-tab" onclick="switchTab('gi', this)">
+                <span class="dot"></span> GI Pipes
+            </button>
+        </div>
+
+        <div class="tab-content active" id="tab-gp">
+            <div class="product-grid grid-3">
+                <div class="input-group">
+                    <label>GP Size</label>
+                    <select id="gp-size" onchange="updateGpGauges()"></select>
+                </div>
+                <div class="input-group">
+                    <label>Gauge</label>
+                    <div class="gauge-toggle">
+                        <button class="gauge-btn active" id="gp-g16" onclick="selectGauge('16')">16G</button>
+                        <button class="gauge-btn" id="gp-g18" onclick="selectGauge('18')">18G</button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Quantity (Nos)</label>
+                    <input type="number" id="gp-qty" min="1" placeholder="0" onkeydown="if(event.key==='Enter') addItem('gp')">
+                </div>
+            </div>
+            <div class="action-row">
+                <button class="btn-add" onclick="addItem('gp')">+ Add GP Item</button>
+                <button class="btn-reset" onclick="resetBill()">Reset All</button>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-gi">
+            <div class="product-grid grid-2">
+                <div class="input-group">
+                    <label>GI Size</label>
+                    <select id="gi-size"></select>
+                </div>
+                <div class="input-group">
+                    <label>Quantity (Nos)</label>
+                    <input type="number" id="gi-qty" min="1" placeholder="0" onkeydown="if(event.key==='Enter') addItem('gi')">
+                </div>
+            </div>
+            <div class="action-row">
+                <button class="btn-add" onclick="addItem('gi')">+ Add GI Item</button>
+                <button class="btn-reset" onclick="resetBill()">Reset All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bill Items -->
+    <div class="section-label">Bill Items</div>
+    <div class="table-card">
+        <div class="table-header-row">
+            <div class="table-title">Quotation Line Items</div>
+            <div class="item-counter" id="itemCounter">0 items</div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Cat</th>
+                    <th>Size</th>
+                    <th>Gauge</th>
+                    <th>Qty</th>
+                    <th>Wt/No</th>
+                    <th>Total Wt</th>
+                    <th>Rate</th>
+                    <th style="text-align:right;">Amount</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="billBody">
+                <tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🏗️</div>No items added yet — select GP or GI tab above</div></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Totals -->
+    <div class="totals-panel">
+        <div class="totals-stats">
+            <div class="stat-cell">
+                <div class="stat-label">Total Weight</div>
+                <div class="stat-value" id="totalWeight">0.00 kg</div>
+            </div>
+            <div class="stat-cell">
+                <div class="stat-label">Freight / Coolie</div>
+                <div class="stat-value" id="freightDisplay">₹0.00</div>
+            </div>
+            <div class="stat-cell">
+                <div class="stat-label">Line Items</div>
+                <div class="stat-value" id="itemCount">0</div>
+            </div>
+        </div>
+        <div class="totals-grand">
+            <div class="grand-label">Grand Total</div>
+            <div class="grand-amount" id="finalTotal">₹0.00</div>
+        </div>
+    </div>
+
+    <button class="btn-pdf" onclick="saveQuotation()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download Official PDF Estimate
+    </button>
+
+</div>
+
+<script>
+document.getElementById('date').valueAsDate = new Date();
+
+const gpData = {
+    "1/2\" x 1/2\" (16x16mm)":      { 16: 4.0,  18: 3.2  },
+    "3/4\" x 3/4\" (20x20mm)":      { 16: 5.0,  18: 4.0  },
+    "1\" x 1\" (25x25mm)":          { 16: 6.0,  18: 5.2  },
+    "1 1/4\" x 1 1/4\" (32x32mm)":  { 16: 8.0,  18: null },
+    "1 1/2\" x 1 1/2\" (40x40mm)":  { 16: 10.0, 18: null },
+    "2\" x 2\" (50x50mm)":          { 16: 12.6, 18: null },
+    "3\" x 3\" (75x75mm)":          { 16: 19.0, 18: null },
+    "4\" x 4\" (100x100mm)":        { 16: 26.0, 18: null },
+    "1\" x 10\" (25x10mm)":         { 16: 5.0,  18: null },
+    "1 1/2\" x 10\" (40x10mm)":     { 16: 6.2,  18: null },
+    "1 1/2\" x 3/4\" (40x20mm)":    { 16: 7.6,  18: null },
+    "2\" x 1\" (50x25mm)":          { 16: 9.6,  18: 8.5  },
+    "2 1/2\" x 1 1/2\" (60x40mm)":  { 16: 12.6, 18: 12.5 },
+    "3\" x 1\" (75x25mm)":          { 16: 12.6, 18: 11.0 },
+    "3\" x 1 1/2\" (80x40mm)":      { 16: 15.2, 18: 12.8 },
+    "4\" x 1\" (100x25mm)":         { 16: 15.2, 18: null },
+    "4\" x 2\" (100x50mm)":         { 16: 19.0, 18: null },
+    "1\" Round GP":                  { 16: 6.0,  18: null },
+    "1 1/4\" Round GP":              { 16: 7.9,  18: null },
+    "1 1/2\" Round GP":              { 16: 9.9,  18: null },
+    "2\" Round GP":                  { 16: 12.5, 18: null },
+    "2 1/2\" Round GP":              { 16: 14.5, 18: null },
+    "3\" Round GP":                  { 16: 20.5, 18: null }
+};
+
+const giData = {
+    "1/2\" Round GI":    0,
+    "3/4\" Round GI":    7.9,
+    "1\" Round GI":      9.8,
+    "1 1/4\" Round GI":  12.4,
+    "1 1/2\" Round GI":  14.4,
+    "2\" Round GI":      18.0,
+    "2 1/2\" Round GI":  22.9,
+    "3\" Round GI":      26.0,
+    "3 1/2\" Round GI":  32.0,
+    "4\" Round GI":      34.0,
+    "5\" Round GI":      45.3
+};
+
+let gpSelectedGauge = '16';
+
+function populateDropdowns() {
+    const gpSel = document.getElementById('gp-size');
+    for (let s in gpData) { let o = document.createElement('option'); o.value = o.text = s; gpSel.add(o); }
+    updateGpGauges();
+    const giSel = document.getElementById('gi-size');
+    for (let s in giData) { let o = document.createElement('option'); o.value = o.text = s; giSel.add(o); }
+}
+
+function updateGpGauges() {
+    const size = document.getElementById('gp-size').value;
+    const has18 = gpData[size] && gpData[size][18] !== null;
+    const btn18 = document.getElementById('gp-g18');
+    btn18.disabled = !has18;
+    if (!has18) {
+        btn18.classList.remove('active');
+        document.getElementById('gp-g16').classList.add('active');
+        gpSelectedGauge = '16';
+    }
+}
+
+function selectGauge(g) {
+    const size = document.getElementById('gp-size').value;
+    if (g === '18' && (!gpData[size] || gpData[size][18] === null)) return;
+    gpSelectedGauge = g;
+    document.getElementById('gp-g16').classList.toggle('active', g === '16');
+    document.getElementById('gp-g18').classList.toggle('active', g === '18');
+}
+
+function switchTab(tab, el) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+}
+
+let cartItems = [];
+
+function addItem(cat) {
+    const rate = parseFloat(document.getElementById(cat === 'gp' ? 'rate-gp' : 'rate-gi').value) || 0;
+    if (cat === 'gp') {
+        const size = document.getElementById('gp-size').value;
+        const qty = parseFloat(document.getElementById('gp-qty').value);
+        if (!qty || qty <= 0) { alert('Enter a valid quantity'); return; }
+        let wt = gpData[size][parseInt(gpSelectedGauge)];
+        let gauge = gpSelectedGauge;
+        if (!wt) { wt = gpData[size][16]; gauge = '16'; alert(`18G not available for ${size}. Using 16G.`); }
+        cartItems.push({ cat: 'GP', size, gauge: gauge + 'G', qty, weightPerNo: wt, totalWeight: wt * qty, rate, amount: wt * qty * rate });
+        document.getElementById('gp-qty').value = '';
+        document.getElementById('gp-qty').focus();
+    } else {
+        const size = document.getElementById('gi-size').value;
+        const qty = parseFloat(document.getElementById('gi-qty').value);
+        if (!qty || qty <= 0) { alert('Enter a valid quantity'); return; }
+        const wt = giData[size];
+        cartItems.push({ cat: 'GI', size, gauge: '—', qty, weightPerNo: wt, totalWeight: wt * qty, rate, amount: wt * qty * rate });
+        document.getElementById('gi-qty').value = '';
+        document.getElementById('gi-qty').focus();
+    }
+    renderTable();
+}
+
+function deleteItem(i) { cartItems.splice(i, 1); renderTable(); }
+
+function renderTable() {
+    const tbody = document.getElementById('billBody');
+    if (cartItems.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">🏗️</div>No items added yet — select GP or GI tab above</div></td></tr>`;
+        updateTotals(); return;
+    }
+    tbody.innerHTML = cartItems.map((item, i) => `
+        <tr>
+            <td><span class="cat-badge badge-${item.cat.toLowerCase()}">${item.cat}</span></td>
+            <td>${item.size}</td>
+            <td>${item.gauge}</td>
+            <td>${item.qty}</td>
+            <td>${item.weightPerNo} kg</td>
+            <td>${item.totalWeight.toFixed(2)} kg</td>
+            <td>₹${item.rate}</td>
+            <td class="amount-cell">₹${item.amount.toFixed(2)}</td>
+            <td><button class="btn-del" onclick="deleteItem(${i})" title="Remove">✕</button></td>
+        </tr>
+    `).join('');
+    updateTotals();
+}
+
+function recalcAll() {
+    const gpRate = parseFloat(document.getElementById('rate-gp').value) || 0;
+    const giRate = parseFloat(document.getElementById('rate-gi').value) || 0;
+    cartItems.forEach(item => {
+        item.rate = item.cat === 'GP' ? gpRate : giRate;
+        item.amount = item.totalWeight * item.rate;
+    });
+    renderTable();
+}
+
+function updateTotals() {
+    let grandWeight = 0, grandTotal = 0;
+    cartItems.forEach(item => { grandWeight += item.totalWeight; grandTotal += item.amount; });
+    const freight = parseFloat(document.getElementById('freight').value) || 0;
+    document.getElementById('totalWeight').textContent = grandWeight.toFixed(2) + ' kg';
+    document.getElementById('freightDisplay').textContent = '₹' + freight.toFixed(2);
+    document.getElementById('itemCount').textContent = cartItems.length;
+    document.getElementById('itemCounter').textContent = cartItems.length + ' item' + (cartItems.length !== 1 ? 's' : '');
+    document.getElementById('finalTotal').textContent = '₹' + (grandTotal + freight).toFixed(2);
+}
+
+function resetBill() {
+    if (confirm('Clear all items?')) {
+        cartItems = [];
+        document.getElementById('freight').value = 0;
+        renderTable();
+    }
+}
+
+async function saveQuotation() {
+    if (cartItems.length === 0) { alert('Add at least one item before downloading.'); return; }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const W = doc.internal.pageSize.getWidth();
+
+    const customer = document.getElementById('customer').value || 'Cash Customer';
+    const date = document.getElementById('date').value;
+    const gpRate = parseFloat(document.getElementById('rate-gp').value) || 0;
+    const giRate = parseFloat(document.getElementById('rate-gi').value) || 0;
+    const freight = parseFloat(document.getElementById('freight').value) || 0;
+
+    let pdfWeight = 0, pdfItemTotal = 0;
+    const tableRows = cartItems.map(item => {
+        pdfWeight += item.totalWeight;
+        pdfItemTotal += item.amount;
+        return [item.cat, item.size, item.gauge, item.qty, item.weightPerNo + ' kg', item.totalWeight.toFixed(2) + ' kg', 'Rs.' + item.rate, 'Rs.' + item.amount.toFixed(2)];
+    });
+
+    // ── Amber top accent bar
+    doc.setFillColor(245, 158, 11);
+    doc.rect(0, 0, W, 4, 'F');
+
+    // ── Dark navy header
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 4, W, 54, 'F');
+
+    // ── Subtle grid pattern overlay (simulate texture)
+    doc.setDrawColor(245, 158, 11);
+    doc.setLineWidth(0.08);
+    for (let x = 0; x <= W; x += 8) { doc.setGState(new doc.GState({opacity: 0.06})); doc.line(x, 4, x, 58); }
+    for (let y = 4; y <= 58; y += 8) { doc.line(0, y, W, y); }
+    doc.setGState(new doc.GState({opacity: 1}));
+
+    // ── Brand name
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(26);
+    doc.setTextColor(255, 255, 255);
+    doc.text('MAMBAKKADANS', 14, 24);
+
+    doc.setFontSize(26);
+    doc.setTextColor(245, 158, 11);
+    doc.text('STEELS & CEMENTS', 14, 35);
+
+    // ── Tagline
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8.5);
+    doc.setTextColor(148, 163, 184);
+    doc.text('STRENGTH YOU CAN BUILD ON', 14, 43);
+
+    // ── Thin amber rule under tagline
+    doc.setFillColor(245, 158, 11);
+    doc.setDrawColor(245, 158, 11);
+    doc.setLineWidth(0.5);
+    doc.line(14, 47, 95, 47);
+
+    // ── ESTIMATE badge
+    doc.setFillColor(245, 158, 11);
+    doc.roundedRect(W - 52, 14, 38, 16, 2, 2, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.setTextColor(15, 23, 42);
+    doc.text('ESTIMATE', W - 33, 24.5, null, null, 'center');
+
+    // ── Bottom amber line on header
+    doc.setFillColor(245, 158, 11);
+    doc.rect(0, 58, W, 1.5, 'F');
+
+    // ── Info row background
+    doc.setFillColor(248, 250, 252);
+    doc.rect(0, 59.5, W, 20, 'F');
+    doc.setFillColor(226, 232, 240);
+    doc.rect(0, 79.5, W, 0.5, 'F');
+
+    // ── Info labels
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.5);
+    doc.setTextColor(100, 116, 139);
+    doc.text('CUSTOMER', 14, 67);
+    doc.text('DATE', 95, 67);
+    doc.text('GP RATE', W - 68, 67);
+    doc.text('GI RATE', W - 28, 67);
+
+    // ── Info values
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(15, 23, 42);
+    doc.text(customer, 14, 75);
+    doc.text(date, 95, 75);
+    doc.text('Rs.' + gpRate + '/kg', W - 68, 75);
+    doc.text('Rs.' + giRate + '/kg', W - 28, 75);
+
+    // ── Table
+    doc.autoTable({
+        startY: 83,
+        head: [['Cat', 'Size', 'Gauge', 'Qty', 'Wt/No', 'Total Wt', 'Rate', 'Amount']],
+        body: tableRows,
+        theme: 'striped',
+        headStyles: {
+            fillColor: [15, 23, 42],
+            textColor: [255, 255, 255],
+            fontSize: 8.5,
+            fontStyle: 'bold',
+            cellPadding: 5
+        },
+        bodyStyles: { fontSize: 9, cellPadding: 4, textColor: [51, 65, 85] },
+        alternateRowStyles: { fillColor: [248, 250, 252] },
+        columnStyles: { 7: { halign: 'right', fontStyle: 'bold' } },
+        foot: [
+            ['', '', '', '', '', pdfWeight.toFixed(2) + ' kg', 'Subtotal:', 'Rs.' + pdfItemTotal.toFixed(2)],
+            ['', '', '', '', '', '', 'Freight / Coolie:', 'Rs.' + freight.toFixed(2)],
+            ['', '', '', '', '', '', 'GRAND TOTAL:', 'Rs.' + (pdfItemTotal + freight).toFixed(2)]
+        ],
+        footStyles: {
+            fillColor: [30, 41, 59],
+            textColor: [226, 232, 240],
+            fontStyle: 'bold',
+            fontSize: 9.5
+        },
+        didDrawCell: function(data) {
+            if (data.section === 'foot' && data.row.index === 2) {
+                doc.setFillColor(245, 158, 11);
+                doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height, 'F');
+                doc.setTextColor(15, 23, 42);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                const pad = 3;
+                if (data.column.index === 6) doc.text('GRAND TOTAL:', data.cell.x + pad, data.cell.y + data.cell.height - pad);
+                if (data.column.index === 7) doc.text('Rs.' + (pdfItemTotal + freight).toFixed(2), data.cell.x + data.cell.width - pad, data.cell.y + data.cell.height - pad, null, null, 'right');
+            }
+        }
+    });
+
+    const finalY = doc.lastAutoTable.finalY;
+
+    // ── Footer
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, finalY + 12, W, 26, 'F');
+    doc.setFillColor(245, 158, 11);
+    doc.rect(0, finalY + 12, 4, 26, 'F');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.setTextColor(255, 255, 255);
+    doc.text('Mambakkadans Steels & Cements', 11, finalY + 23);
+
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(8);
+    doc.setTextColor(245, 158, 11);
+    doc.text('Strength You Can Build On', 11, finalY + 30);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(148, 163, 184);
+    doc.text('Thank you for your business!', W - 14, finalY + 26, null, null, 'right');
+
+    doc.save(`${customer.replace(/\s+/g, '_')}_Estimate.pdf`);
+}
+
+populateDropdowns();
+</script>
+</body>
+</html>

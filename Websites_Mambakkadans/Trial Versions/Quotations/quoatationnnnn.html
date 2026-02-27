@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mambakkadan's Steels & Cements | Quotation System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .navy-gradient { background: linear-gradient(135deg, #1A2C42 0%, #2A4365 100%); }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
+        .sticky-summary { position: sticky; top: 2rem; }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800">
+
+    <header class="navy-gradient py-6 px-4 mb-8 shadow-xl border-b-4 border-amber-500">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+            <div>
+                <h1 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight uppercase">Mambakkadan's Steels & Cements</h1>
+                <p class="text-amber-400 font-bold italic text-lg mt-1">Strength you can Build on.</p>
+            </div>
+            <div class="mt-4 md:mt-0 text-white/70 text-sm font-mono bg-white/10 px-4 py-2 rounded-lg">
+                Internal Quote v3.0 | <span id="headerDate"></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 pb-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <div class="lg:col-span-5 space-y-6">
+                
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Market Pricing & Client</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label class="block text-xs font-bold text-navy-500 mb-1">GP STEEL RATE (₹/KG)</label>
+                            <input type="number" id="gpRate" value="86" class="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl focus:border-navy-500 outline-none font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-navy-500 mb-1">GI PIPE RATE (₹/KG)</label>
+                            <input type="number" id="giRate" value="95" class="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl focus:border-navy-500 outline-none font-bold">
+                        </div>
+                    </div>
+                    <input type="text" id="custName" placeholder="Customer Name / Project Title" class="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-xl focus:border-navy-500 outline-none">
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Item Selection</h3>
+                    
+                    <div class="relative group">
+                        <input type="text" id="prodSearch" oninput="updateDropdown()" placeholder="Search sizes (e.g. 2x1)..." 
+                               class="w-full bg-slate-50 border-2 border-slate-200 p-4 rounded-t-xl focus:border-navy-500 outline-none font-medium">
+                        <div id="dropdownList" class="max-h-60 overflow-y-auto border-x-2 border-b-2 border-slate-200 rounded-b-xl mb-4 bg-white">
+                            </div>
+                    </div>
+
+                    <div id="configSection" class="hidden p-4 bg-slate-50 rounded-xl mb-4 border border-slate-100">
+                        <p id="selectedDisplay" class="font-bold text-navy-900 mb-3"></p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div id="gaugeContainer">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Select Gauge</label>
+                                <select id="gaugeVal" class="w-full p-3 rounded-lg border border-slate-200 bg-white font-bold">
+                                    <option value="16">16 Gauge</option>
+                                    <option value="18">18 Gauge</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Quantity (Nos)</label>
+                                <input type="number" id="itemQty" value="1" min="1" class="w-full p-3 rounded-lg border border-slate-200 bg-white font-bold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="addItem()" id="addBtn" class="w-full bg-slate-200 text-slate-400 cursor-not-allowed font-black py-4 rounded-xl shadow-md uppercase tracking-wide transition-all duration-300">
+                        Add to List
+                    </button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7">
+                <div class="sticky-summary">
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200 min-h-[500px] flex flex-col">
+                        <div class="bg-slate-50 p-6 border-b flex justify-between items-center">
+                            <h2 class="font-black text-navy-900 uppercase tracking-widest text-sm">Draft Quotation</h2>
+                            <button onclick="clearAll()" class="text-red-400 text-xs hover:underline uppercase font-bold">Clear All</button>
+                        </div>
+
+                        <div class="flex-grow overflow-y-auto p-0">
+                            <table class="w-full text-left">
+                                <thead class="bg-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-widest">
+                                    <tr>
+                                        <th class="px-6 py-4">Description</th>
+                                        <th class="px-6 py-4 text-center">Unit Wt</th>
+                                        <th class="px-6 py-4 text-center">Qty</th>
+                                        <th class="px-6 py-4 text-right">Total</th>
+                                        <th class="px-6 py-4 text-center"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="quoteBody" class="divide-y divide-slate-100">
+                                    </tbody>
+                            </table>
+                            <div id="emptyMsg" class="p-20 text-center flex flex-col items-center justify-center opacity-30">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <p class="font-bold">No items added to quotation.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-navy-900 p-8 text-white border-t-4 border-amber-500">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <p class="text-amber-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1">Grand Total Payable</p>
+                                    <h4 class="text-5xl font-extrabold tracking-tighter">₹ <span id="grandTotal">0.00</span></h4>
+                                </div>
+                                <button onclick="generatePDF()" class="bg-amber-500 hover:bg-amber-400 text-navy-900 font-black px-10 py-5 rounded-2xl shadow-xl transform transition hover:-translate-y-1 active:scale-95 uppercase tracking-widest text-sm">
+                                    Download PDF Quote
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const products = [
+            { name: '1/2" * 1/2" GP (16x16mm)', cat: 'gp', g16: 4, g18: 3.2 },
+            { name: '3/4" * 3/4" GP (20x20mm)', cat: 'gp', g16: 5, g18: 4 },
+            { name: '1" * 1" GP (25x25mm)', cat: 'gp', g16: 6, g18: 5.2 },
+            { name: '1 1/4" * 1 1/4" GP (32x32mm)', cat: 'gp', g16: 8, g18: null },
+            { name: '1 1/2" * 1 1/2" GP (40x40mm)', cat: 'gp', g16: 10, g18: null },
+            { name: '2" * 2" GP (50x50mm)', cat: 'gp', g16: 12.6, g18: null },
+            { name: '3" * 3" GP (75x75mm)', cat: 'gp', g16: 19, g18: null },
+            { name: '4" * 4" GP (100x100mm)', cat: 'gp', g16: 26, g18: null },
+            { name: '1" * 10" GP (25x10mm)', cat: 'gp', g16: 5, g18: null },
+            { name: '1 1/2" * 10" GP (40x10mm)', cat: 'gp', g16: 6.2, g18: null },
+            { name: '1 1/2" * 3/4" GP (40x20mm)', cat: 'gp', g16: 7.6, g18: null },
+            { name: '2" * 1" GP (50x25mm)', cat: 'gp', g16: 9.6, g18: 8.5 },
+            { name: '2 1/2" * 1 1/2" GP (60x40mm)', cat: 'gp', g16: 12.6, g18: 12.5 },
+            { name: '3" * 1" GP (75x25mm)', cat: 'gp', g16: 12.6, g18: 11 },
+            { name: '3" * 1 1/2" GP (80x40mm)', cat: 'gp', g16: 15.2, g18: 12.8 },
+            { name: '4" * 1" GP (100x25mm)', cat: 'gp', g16: 15.2, g18: null },
+            { name: '4" * 2" GP (100x50mm)', cat: 'gp', g16: 19, g18: null },
+            { name: '1" Round GP', cat: 'gp', g16: 6, g18: null },
+            { name: '1 1/4" Round GP', cat: 'gp', g16: 7.9, g18: null },
+            { name: '1 1/2" Round GP', cat: 'gp', g16: 9.9, g18: null },
+            { name: '2" Round GP', cat: 'gp', g16: 12.5, g18: null },
+            { name: '2 1/2" Round GP', cat: 'gp', g16: 14.5, g18: null },
+            { name: '3" Round GP', cat: 'gp', g16: 20.5, g18: null },
+            { name: '3/4" Round GI', cat: 'gi', weight: 7.9 },
+            { name: '1" Round GI', cat: 'gi', weight: 9.8 },
+            { name: '1 1/4" Round GI', cat: 'gi', weight: 12.4 },
+            { name: '1 1/2" Round GI', cat: 'gi', weight: 14.4 },
+            { name: '2" Round GI', cat: 'gi', weight: 18 },
+            { name: '2 1/2" Round GI', cat: 'gi', weight: 22.9 },
+            { name: '3" Round GI', cat: 'gi', weight: 26 },
+            { name: '3 1/2" Round GI', cat: 'gi', weight: 32 },
+            { name: '4" Round GI', cat: 'gi', weight: 34 },
+            { name: '5" Round GI', cat: 'gi', weight: 45.3 }
+        ];
+
+        let selected = null;
+        let quoteList = [];
+
+        function updateDropdown() {
+            const query = document.getElementById('prodSearch').value.toLowerCase();
+            const list = document.getElementById('dropdownList');
+            list.innerHTML = "";
+            
+            const filtered = products.filter(p => p.name.toLowerCase().includes(query));
+            filtered.forEach(p => {
+                const div = document.createElement('div');
+                div.className = "px-4 py-3 hover:bg-navy-100 hover:text-navy-900 cursor-pointer text-sm border-b border-slate-50 transition";
+                div.innerText = p.name;
+                div.onclick = () => selectItem(p);
+                list.appendChild(div);
+            });
+        }
+
+        function selectItem(p) {
+            selected = p;
+            document.getElementById('prodSearch').value = p.name;
+            document.getElementById('selectedDisplay').innerText = "Configure: " + p.name;
+            document.getElementById('configSection').classList.remove('hidden');
+            document.getElementById('gaugeContainer').classList.toggle('hidden', !(p.cat === 'gp' && p.g18));
+            
+            const btn = document.getElementById('addBtn');
+            btn.classList.replace('bg-slate-200', 'bg-navy-900');
+            btn.classList.replace('text-slate-400', 'text-amber-400');
+            btn.classList.remove('cursor-not-allowed');
+            btn.disabled = false;
+        }
+
+        function addItem() {
+            if(!selected) return;
+            const qty = parseFloat(document.getElementById('itemQty').value);
+            const rate = selected.cat === 'gp' ? parseFloat(document.getElementById('gpRate').value) : parseFloat(document.getElementById('giRate').value);
+            
+            let weight = selected.weight || selected.g16;
+            let label = selected.name;
+
+            if (selected.cat === 'gp') {
+                const g = document.getElementById('gaugeVal').value;
+                weight = (g === "18" && selected.g18) ? selected.g18 : selected.g16;
+                label += ` (${g} Gauge)`;
+            } else {
+                label += ` (Grade B)`;
+            }
+
+            quoteList.push({ desc: label, wt: weight, qty: qty, rate: rate, total: weight * qty * rate });
+            render();
+            
+            // Clean up
+            document.getElementById('prodSearch').value = "";
+            document.getElementById('configSection').classList.add('hidden');
+            selected = null;
+            updateDropdown();
+        }
+
+        function render() {
+            const body = document.getElementById('quoteBody');
+            body.innerHTML = "";
+            let grand = 0;
+            document.getElementById('emptyMsg').classList.toggle('hidden', quoteList.length > 0);
+
+            quoteList.forEach((item, i) => {
+                grand += item.total;
+                body.innerHTML += `
+                    <tr class="group hover:bg-slate-50 transition">
+                        <td class="px-6 py-4 font-bold text-navy-900">${item.desc}</td>
+                        <td class="px-6 py-4 text-center text-slate-500 text-xs">${item.wt} kg</td>
+                        <td class="px-6 py-4 text-center font-bold font-mono">${item.qty}</td>
+                        <td class="px-6 py-4 text-right font-black text-navy-900">₹${item.total.toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                        <td class="px-6 py-4 text-center">
+                            <button onclick="remove(${i})" class="text-slate-300 hover:text-red-500">✕</button>
+                        </td>
+                    </tr>`;
+            });
+            document.getElementById('grandTotal').innerText = grand.toLocaleString('en-IN', {minimumFractionDigits: 2});
+        }
+
+        function remove(i) { quoteList.splice(i, 1); render(); }
+        function clearAll() { if(confirm("Clear this quote?")) { quoteList = []; render(); } }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFontSize(22); doc.setTextColor(26, 44, 66);
+            doc.text("MAMBAKKADAN'S STEELS & CEMENTS", 105, 20, null, null, "center");
+            doc.setFontSize(10); doc.setTextColor(150);
+            doc.text("Strength you can Build on.", 105, 26, null, null, "center");
+            
+            doc.autoTable({
+                startY: 40,
+                head: [['Description', 'Wt/No', 'Qty', 'Rate', 'Total']],
+                body: quoteList.map(i => [i.desc, i.wt, i.qty, i.rate, i.total.toFixed(2)]),
+                headStyles: { fillColor: [26, 44, 66] },
+                columnStyles: { 4: { halign: 'right' } }
+            });
+            
+            const finalY = doc.lastAutoTable.finalY + 15;
+            doc.setFontSize(14); doc.setFont("helvetica", "bold");
+            doc.text(`GRAND TOTAL: Rs. ${document.getElementById('grandTotal').innerText}`, 190, finalY, null, null, "right");
+            doc.save(`Quote_${Date.now()}.pdf`);
+        }
+
+        document.getElementById('headerDate').innerText = new Date().toLocaleDateString();
+        window.onload = updateDropdown;
+    </script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mambakkadan's Steels & Cements</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        select, input { border: 1px solid #cbd5e1 !important; }
+    </style>
+</head>
+<body class="p-3 md:p-8">
+
+    <div class="max-w-4xl mx-auto mb-6 text-center">
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">MAMBAKKADAN'S STEELS & CEMENTS</h1>
+        <p class="text-blue-600 font-semibold italic text-lg">Strength you can Build on.</p>
+    </div>
+
+    <div class="max-w-4xl mx-auto space-y-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="card p-5 border-l-4 border-blue-500">
+                <h2 class="font-bold text-slate-700 mb-3 flex items-center gap-2">💰 Today's Rates (₹/kg)</h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">GP Steel</label>
+                        <input type="number" id="gpRate" value="86" class="w-full p-2 rounded bg-slate-50 font-bold">
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-500 uppercase">GI Pipes</label>
+                        <input type="number" id="giRate" value="95" class="w-full p-2 rounded bg-slate-50 font-bold">
+                    </div>
+                </div>
+            </div>
+            <div class="card p-5 border-l-4 border-green-500">
+                <h2 class="font-bold text-slate-700 mb-3">👤 Customer Details</h2>
+                <input type="text" id="custName" placeholder="Customer Name" class="w-full p-2 rounded mb-2">
+            </div>
+        </div>
+
+        <div class="card p-6">
+            <h2 class="font-bold text-slate-700 mb-4">Add Product</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="md:col-span-2">
+                    <label class="text-xs font-bold text-slate-500 uppercase">Search / Select Item</label>
+                    <select id="productSelect" class="w-full p-3 rounded mt-1 text-lg" onchange="handleProductChange()">
+                        </select>
+                </div>
+                <div id="gaugeBox">
+                    <label class="text-xs font-bold text-slate-500 uppercase">Select Gauge</label>
+                    <select id="gaugeSelect" class="w-full p-3 rounded mt-1 text-lg bg-yellow-50">
+                        <option value="16">16 Gauge</option>
+                        <option value="18">18 Gauge</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-500 uppercase">Qty (Nos)</label>
+                    <input type="number" id="itemQty" value="1" min="1" class="w-full p-3 rounded mt-1 text-lg font-bold">
+                </div>
+                <div class="md:col-span-2 flex items-end">
+                    <button onclick="addItem()" class="w-full bg-slate-800 text-white font-bold py-3 rounded-lg hover:bg-slate-700 transition shadow-md">
+                        + Add to Quotation
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card overflow-hidden">
+            <div class="p-4 bg-slate-50 border-b flex justify-between items-center">
+                <span class="font-bold text-slate-700 uppercase tracking-wider text-sm">Draft Quotation</span>
+                <span id="dateDisplay" class="text-slate-500 text-sm font-medium"></span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-white text-slate-400 text-[10px] uppercase tracking-widest border-b">
+                            <th class="p-4">Item Details</th>
+                            <th class="p-4 text-center">Weight</th>
+                            <th class="p-4 text-center">Qty</th>
+                            <th class="p-4 text-right">Amount</th>
+                            <th class="p-4"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="quoteBody" class="text-sm">
+                        </tbody>
+                </table>
+            </div>
+            
+            <div id="emptyMsg" class="p-10 text-center text-slate-400 italic">No products added yet. Start by selecting an item above.</div>
+            
+            <div class="p-6 border-t bg-slate-50 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-center md:text-left">
+                    <span class="text-slate-500 uppercase text-[10px] font-bold tracking-widest">Total Payable</span>
+                    <div class="text-3xl font-black text-slate-900">₹ <span id="grandTotal text-blue-600">0.00</span></div>
+                </div>
+                <button onclick="generatePDF()" class="w-full md:w-auto bg-blue-600 text-white px-8 py-4 rounded-xl font-bold shadow-xl hover:bg-blue-700 flex items-center justify-center gap-2 text-lg">
+                    📥 Download & Share PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            // GP SQUARE/RECT
+            { name: '1/2" * 1/2" GP (16x16mm)', cat: 'gp', g16: 4, g18: 3.2 },
+            { name: '3/4" * 3/4" GP (20x20mm)', cat: 'gp', g16: 5, g18: 4 },
+            { name: '1" * 1" GP (25x25mm)', cat: 'gp', g16: 6, g18: 5.2 },
+            { name: '1 1/4" * 1 1/4" GP (32x32mm)', cat: 'gp', g16: 8, g18: null },
+            { name: '1 1/2" * 1 1/2" GP (40x40mm)', cat: 'gp', g16: 10, g18: null },
+            { name: '2" * 2" GP (50x50mm)', cat: 'gp', g16: 12.6, g18: null },
+            { name: '3" * 3" GP (75x75mm)', cat: 'gp', g16: 19, g18: null },
+            { name: '4" * 4" GP (100x100mm)', cat: 'gp', g16: 26, g18: null },
+            { name: '1" * 10" GP (25x10mm)', cat: 'gp', g16: 5, g18: null },
+            { name: '1 1/2" * 10" GP (40x10mm)', cat: 'gp', g16: 6.2, g18: null },
+            { name: '1 1/2" * 3/4" GP (40x20mm)', cat: 'gp', g16: 7.6, g18: null },
+            { name: '2" * 1" GP (50x25mm)', cat: 'gp', g16: 9.6, g18: 8.5 },
+            { name: '2 1/2" * 1 1/2" GP (60x40mm)', cat: 'gp', g16: 12.6, g18: 12.5 },
+            { name: '3" * 1" GP (75x25mm)', cat: 'gp', g16: 12.6, g18: 11 },
+            { name: '3" * 1 1/2" GP (80x40mm)', cat: 'gp', g16: 15.2, g18: 12.8 },
+            { name: '4" * 1" GP (100x25mm)', cat: 'gp', g16: 15.2, g18: null },
+            { name: '4" * 2" GP (100x50mm)', cat: 'gp', g16: 19, g18: null },
+            // GP ROUND
+            { name: '1" Round GP', cat: 'gp', g16: 6, g18: null },
+            { name: '1 1/4" Round GP', cat: 'gp', g16: 7.9, g18: null },
+            { name: '1 1/2" Round GP', cat: 'gp', g16: 9.9, g18: null },
+            { name: '2" Round GP', cat: 'gp', g16: 12.5, g18: null },
+            { name: '2 1/2" Round GP', cat: 'gp', g16: 14.5, g18: null },
+            { name: '3" Round GP', cat: 'gp', g16: 20.5, g18: null },
+            // GI ROUND (Grade B)
+            { name: '1/2" Round GI', cat: 'gi', weight: 0 },
+            { name: '3/4" Round GI', cat: 'gi', weight: 7.9 },
+            { name: '1" Round GI', cat: 'gi', weight: 9.8 },
+            { name: '1 1/4" Round GI', cat: 'gi', weight: 12.4 },
+            { name: '1 1/2" Round GI', cat: 'gi', weight: 14.4 },
+            { name: '2" Round GI', cat: 'gi', weight: 18 },
+            { name: '2 1/2" Round GI', cat: 'gi', weight: 22.9 },
+            { name: '3" Round GI', cat: 'gi', weight: 26 },
+            { name: '3 1/2" Round GI', cat: 'gi', weight: 32 },
+            { name: '4" Round GI', cat: 'gi', weight: 34 },
+            { name: '5" Round GI', cat: 'gi', weight: 45.3 }
+        ];
+
+        let quoteList = [];
+
+        function init() {
+            document.getElementById('dateDisplay').innerText = new Date().toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric'});
+            const select = document.getElementById('productSelect');
+            products.forEach((p, index) => {
+                let opt = document.createElement('option');
+                opt.value = index;
+                opt.innerHTML = p.name;
+                select.appendChild(opt);
+            });
+            handleProductChange();
+        }
+
+        function handleProductChange() {
+            const p = products[document.getElementById('productSelect').value];
+            const gBox = document.getElementById('gaugeBox');
+            // Show gauge selection ONLY if it's GP and has 18G data
+            gBox.style.display = (p.cat === 'gp' && p.g18) ? 'block' : 'none';
+        }
+
+        function addItem() {
+            const pIdx = document.getElementById('productSelect').value;
+            const p = products[pIdx];
+            const qty = parseFloat(document.getElementById('itemQty').value);
+            const rate = p.cat === 'gp' ? parseFloat(document.getElementById('gpRate').value) : parseFloat(document.getElementById('giRate').value);
+            
+            let weight = p.weight;
+            let label = p.name;
+            
+            if(p.cat === 'gp') {
+                if(p.g18) {
+                    const g = document.getElementById('gaugeSelect').value;
+                    weight = g === "16" ? p.g16 : p.g18;
+                    label += ` (${g} Gauge)`;
+                } else {
+                    weight = p.g16;
+                    label += ` (16 Gauge)`;
+                }
+            } else {
+                label += ` (Grade B)`;
+            }
+
+            const totalWeight = weight * qty;
+            const totalPrice = totalWeight * rate;
+
+            quoteList.push({ desc: label, unitWt: weight, qty: qty, rate: rate, total: totalPrice });
+            renderTable();
+        }
+
+        function renderTable() {
+            const body = document.getElementById('quoteBody');
+            const empty = document.getElementById('emptyMsg');
+            body.innerHTML = "";
+            let grand = 0;
+
+            if(quoteList.length > 0) empty.style.display = 'none';
+
+            quoteList.forEach((item, index) => {
+                grand += item.total;
+                body.innerHTML += `
+                    <tr class="border-b bg-white">
+                        <td class="p-4 font-semibold text-slate-800">${item.desc}</td>
+                        <td class="p-4 text-center text-slate-500">${item.unitWt} kg</td>
+                        <td class="p-4 text-center font-bold">${item.qty}</td>
+                        <td class="p-4 text-right font-bold text-slate-900">₹${item.total.toLocaleString('en-IN')}</td>
+                        <td class="p-4 text-center"><button onclick="removeItem(${index})" class="text-red-400">✕</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('grandTotal').innerText = grand.toLocaleString('en-IN', {minimumFractionDigits: 2});
+        }
+
+        function removeItem(i) {
+            quoteList.splice(i, 1);
+            renderTable();
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header Branding
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(22);
+            doc.text("MAMBAKKADAN'S STEELS & CEMENTS", 105, 20, null, null, "center");
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "italic");
+            doc.text("Strength you can Build on.", 105, 26, null, null, "center");
+            
+            doc.setDrawColor(200);
+            doc.line(20, 32, 190, 32);
+
+            doc.setFont("helvetica", "normal");
+            doc.text(`Customer: ${document.getElementById('custName').value || 'Valued Customer'}`, 20, 42);
+            doc.text(`Date: ${new Date().toLocaleDateString()}`, 190, 42, null, null, "right");
+
+            const tableData = quoteList.map(i => [i.desc, i.unitWt + " kg", i.qty, i.rate, i.total.toFixed(2)]);
+            doc.autoTable({
+                startY: 50,
+                head: [['Item Description', 'Wt/No', 'Qty', 'Rate (kg)', 'Total (INR)']],
+                body: tableData,
+                headStyles: { fillColor: [15, 23, 42], fontSize: 10 },
+                styles: { fontSize: 9 }
+            });
+
+            const finalY = doc.lastAutoTable.finalY + 15;
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text(`Grand Total: Rs. ${document.getElementById('grandTotal').innerText}`, 190, finalY, null, null, "right");
+
+            doc.save(`Quotation_${new Date().toLocaleDateString()}.pdf`);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

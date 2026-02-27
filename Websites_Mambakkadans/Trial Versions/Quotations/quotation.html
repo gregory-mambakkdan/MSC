@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mambakkadan's Steels & Cements | Quotation Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .card { background: white; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto mb-8 text-center">
+        <h1 class="text-3xl font-bold text-slate-800 tracking-tight">MAMBAKKADAN'S STEELS & CEMENTS</h1>
+        <p class="text-blue-600 font-medium italic">Strength you can Build on.</p>
+        <div class="mt-2 text-xs text-slate-400 uppercase tracking-widest">Internal Quotation System</div>
+    </div>
+
+    <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-1 space-y-6">
+            <div class="card p-6 border-t-4 border-blue-600">
+                <h2 class="font-bold text-lg mb-4 text-slate-700">Set Current Rates</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600">GP Steel Rate (₹/kg)</label>
+                        <input type="number" id="gpRate" value="86" class="w-full border p-2 rounded mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600">GI Pipe Rate (₹/kg)</label>
+                        <input type="number" id="giRate" value="95" class="w-full border p-2 rounded mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card p-6">
+                <h2 class="font-bold text-lg mb-4 text-slate-700">Customer Info</h2>
+                <input type="text" id="custName" placeholder="Customer Name" class="w-full border p-2 rounded mb-3">
+                <input type="text" id="custPhone" placeholder="Phone Number" class="w-full border p-2 rounded">
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-6">
+            <div class="card p-6">
+                <h2 class="font-bold text-lg mb-4 text-slate-700">Add Items to Quote</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm font-medium">Select Product</label>
+                        <select id="productSelect" class="w-full border p-2 rounded mt-1" onchange="toggleGauge()">
+                            </select>
+                    </div>
+                    <div id="gaugeContainer">
+                        <label class="text-sm font-medium">Select Gauge</label>
+                        <select id="gaugeSelect" class="w-full border p-2 rounded mt-1">
+                            <option value="16">16 Gauge</option>
+                            <option value="18">18 Gauge</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium">Quantity (Nos)</label>
+                        <input type="number" id="itemQty" value="1" min="1" class="w-full border p-2 rounded mt-1">
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="addItem()" class="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700 transition">Add to List</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-600 text-sm uppercase">
+                            <th class="p-4">Item</th>
+                            <th class="p-4 text-center">Wt/No</th>
+                            <th class="p-4 text-center">Qty</th>
+                            <th class="p-4 text-right">Total</th>
+                            <th class="p-4 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="quoteBody">
+                        </tbody>
+                </table>
+                <div id="emptyMsg" class="p-8 text-center text-slate-400">No items added yet.</div>
+                
+                <div class="bg-slate-50 p-6 border-t flex justify-between items-center">
+                    <div>
+                        <span class="text-slate-500 uppercase text-xs font-bold tracking-widest">Grand Total</span>
+                        <div class="text-2xl font-bold text-slate-800">₹ <span id="grandTotal">0.00</span></div>
+                    </div>
+                    <button onclick="generatePDF()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold shadow-lg hover:bg-green-700 flex items-center gap-2">
+                        Download PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            // GP Steel (With Gauges)
+            { name: '1/2" * 1/2" GP', cat: 'gp', g16: 4, g18: 3.2 },
+            { name: '3/4" * 3/4" GP', cat: 'gp', g16: 5, g18: 4 },
+            { name: '1" * 1" GP', cat: 'gp', g16: 6, g18: 5.2 },
+            { name: '2" * 1" GP', cat: 'gp', g16: 9.6, g18: 8.5 },
+            { name: '1" Round GP', cat: 'gp', g16: 6, g18: null },
+            { name: '3" Round GP', cat: 'gp', g16: 20.5, g18: null },
+            // GI Pipes (Grade B)
+            { name: '3/4" Round GI', cat: 'gi', weight: 7.9 },
+            { name: '1" Round GI', cat: 'gi', weight: 9.8 },
+            { name: '2" Round GI', cat: 'gi', weight: 18 },
+            { name: '3" Round GI', cat: 'gi', weight: 26 },
+            { name: '5" Round GI', cat: 'gi', weight: 45.3 }
+        ];
+
+        let quoteList = [];
+
+        function init() {
+            const select = document.getElementById('productSelect');
+            products.forEach((p, index) => {
+                let opt = document.createElement('option');
+                opt.value = index;
+                opt.innerHTML = p.name;
+                select.appendChild(opt);
+            });
+            toggleGauge();
+        }
+
+        function toggleGauge() {
+            const p = products[document.getElementById('productSelect').value];
+            document.getElementById('gaugeContainer').style.visibility = (p.cat === 'gp' && p.g18) ? 'visible' : 'hidden';
+        }
+
+        function addItem() {
+            const pIdx = document.getElementById('productSelect').value;
+            const p = products[pIdx];
+            const qty = parseFloat(document.getElementById('itemQty').value);
+            const rate = p.cat === 'gp' ? parseFloat(document.getElementById('gpRate').value) : parseFloat(document.getElementById('giRate').value);
+            
+            let weight = p.weight;
+            let gaugeLabel = "";
+            
+            if(p.cat === 'gp' && p.g16) {
+                const g = document.getElementById('gaugeSelect').value;
+                weight = g === "16" ? p.g16 : p.g18;
+                gaugeLabel = ` (${g}G)`;
+            }
+
+            const totalWeight = weight * qty;
+            const totalPrice = totalWeight * rate;
+
+            quoteList.push({
+                desc: p.name + gaugeLabel,
+                unitWt: weight,
+                qty: qty,
+                rate: rate,
+                total: totalPrice
+            });
+
+            renderTable();
+        }
+
+        function renderTable() {
+            const body = document.getElementById('quoteBody');
+            const empty = document.getElementById('emptyMsg');
+            body.innerHTML = "";
+            let grand = 0;
+
+            if(quoteList.length > 0) empty.style.display = 'none';
+
+            quoteList.forEach((item, index) => {
+                grand += item.total;
+                body.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50 transition">
+                        <td class="p-4 font-medium text-slate-700">${item.desc}</td>
+                        <td class="p-4 text-center text-slate-500">${item.unitWt} kg</td>
+                        <td class="p-4 text-center font-bold">${item.qty}</td>
+                        <td class="p-4 text-right font-bold text-blue-600">₹${item.total.toFixed(2)}</td>
+                        <td class="p-4 text-center"><button onclick="removeItem(${index})" class="text-red-500 hover:underline text-sm">Remove</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('grandTotal').innerText = grand.toLocaleString('en-IN');
+        }
+
+        function removeItem(i) {
+            quoteList.splice(i, 1);
+            renderTable();
+        }
+
+        async function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header
+            doc.setFontSize(20);
+            doc.setTextColor(40);
+            doc.text("MAMBAKKADAN'S STEELS & CEMENTS", 105, 20, null, null, "center");
+            doc.setFontSize(10);
+            doc.text("Strength you can Build on.", 105, 26, null, null, "center");
+            
+            doc.line(20, 32, 190, 32);
+
+            // Customer Info
+            doc.setFontSize(11);
+            doc.text(`Customer: ${document.getElementById('custName').value || 'Walk-in'}`, 20, 45);
+            doc.text(`Date: ${new Date().toLocaleDateString()}`, 190, 45, null, null, "right");
+
+            // Table
+            const tableData = quoteList.map(i => [i.desc, i.unitWt, i.qty, i.rate, i.total.toFixed(2)]);
+            doc.autoTable({
+                startY: 55,
+                head: [['Item Description', 'Wt/No', 'Qty', 'Rate', 'Total (INR)']],
+                body: tableData,
+                theme: 'striped',
+                headStyles: { fillColor: [30, 64, 175] }
+            });
+
+            const finalY = doc.lastAutoTable.finalY + 10;
+            doc.setFontSize(14);
+            doc.text(`Grand Total: Rs. ${document.getElementById('grandTotal').innerText}`, 190, finalY, null, null, "right");
+
+            doc.save(`Quote_${Date.now()}.pdf`);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mambakkadans Steels & Cements</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 40px;
+    background: #f4f6f9;
+}
+
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0,0,0,0.08);
+}
+
+h1 { margin-bottom: 5px; }
+h3 { margin-top: 0; color: gray; }
+
+input, select {
+    padding: 8px;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 10px 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    background: #1e3a8a;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #162c63;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background: #1e3a8a;
+    color: white;
+}
+
+.totals {
+    margin-top: 20px;
+    text-align: right;
+    font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Mambakkadans Steels & Cements</h1>
+<h3>GP Steel Quotation System</h3>
+
+<label>Customer Name:</label>
+<input type="text" id="customer">
+
+<label>Date:</label>
+<input type="date" id="date">
+
+<br><br>
+
+<label>Universal Rate (₹ per kg):</label>
+<input type="number" id="rate" value="74">
+
+<br><br>
+
+<label>Size:</label>
+<select id="size"></select>
+
+<label>Gauge:</label>
+<select id="gauge">
+    <option value="16" selected>16G</option>
+    <option value="18">18G</option>
+</select>
+
+<label>Quantity:</label>
+<input type="number" id="qty" min="1">
+
+<button onclick="addItem()">Add Item</button>
+<button onclick="resetBill()">Reset</button>
+
+<table>
+<thead>
+<tr>
+<th>Size</th>
+<th>Gauge</th>
+<th>Qty</th>
+<th>Wt/No</th>
+<th>Total Wt</th>
+<th>Rate</th>
+<th>Amount</th>
+</tr>
+</thead>
+<tbody id="billBody"></tbody>
+</table>
+
+<div class="totals">
+<p id="totalWeight">Total Weight: 0 kg</p>
+<p id="subTotal">Subtotal: ₹0</p>
+
+<label>Freight:</label>
+<input type="number" id="freight" value="0" onchange="updateTotals()">
+
+<br>
+
+<label>GST 18%:</label>
+<input type="checkbox" id="gstCheck" onchange="updateTotals()">
+
+<p id="finalTotal"><b>Final Total: ₹0</b></p>
+</div>
+
+<br>
+<button onclick="window.print()">Save as PDF</button>
+
+</div>
+
+<script>
+
+// ===== YOUR GP DATA =====
+const gpData = {
+    "1 * 1": {16: 6.2, 18: 5.2},
+    "2 * 2": {16: 12.3, 18: null},
+    "3 * 3": {16: 19.0, 18: null},
+    "4 * 4": {16: 38.0, 18: null},
+    "2 * 1": {16: 9.5, 18: 8.5},
+    "3 * 1": {16: 12.8, 18: 11.0}
+};
+
+const sizeDropdown = document.getElementById("size");
+for (let size in gpData) {
+    let option = document.createElement("option");
+    option.value = size;
+    option.text = size;
+    sizeDropdown.add(option);
+}
+
+let grandWeight = 0;
+let subTotal = 0;
+
+function addItem() {
+
+    const size = document.getElementById("size").value;
+    const gauge = document.getElementById("gauge").value;
+    const qty = parseFloat(document.getElementById("qty").value);
+    const rate = parseFloat(document.getElementById("rate").value);
+
+    if (!qty || qty <= 0) {
+        alert("Enter valid quantity");
+        return;
+    }
+
+    let weightPerNo = gpData[size][gauge];
+
+    if (!weightPerNo) {
+        alert("18G not available. Using 16G.");
+        weightPerNo = gpData[size][16];
+    }
+
+    const totalWeight = weightPerNo * qty;
+    const amount = totalWeight * rate;
+
+    grandWeight += totalWeight;
+    subTotal += amount;
+
+    const row = `
+        <tr>
+            <td>${size}</td>
+            <td>${gauge}G</td>
+            <td>${qty}</td>
+            <td>${weightPerNo} kg</td>
+            <td>${totalWeight.toFixed(2)} kg</td>
+            <td>₹${rate}</td>
+            <td>₹${amount.toFixed(2)}</td>
+        </tr>
+    `;
+
+    document.getElementById("billBody").innerHTML += row;
+
+    updateTotals();
+    document.getElementById("qty").value = "";
+}
+
+function updateTotals() {
+
+    const freight = parseFloat(document.getElementById("freight").value) || 0;
+    const gstEnabled = document.getElementById("gstCheck").checked;
+
+    let total = subTotal + freight;
+
+    if (gstEnabled) {
+        total += total * 0.18;
+    }
+
+    document.getElementById("totalWeight").innerText =
+        "Total Weight: " + grandWeight.toFixed(2) + " kg";
+
+    document.getElementById("subTotal").innerText =
+        "Subtotal: ₹" + (subTotal + freight).toFixed(2);
+
+    document.getElementById("finalTotal").innerHTML =
+        "<b>Final Total: ₹" + total.toFixed(2) + "</b>";
+}
+
+function resetBill() {
+    grandWeight = 0;
+    subTotal = 0;
+    document.getElementById("billBody").innerHTML = "";
+    document.getElementById("freight").value = 0;
+    document.getElementById("gstCheck").checked = false;
+    updateTotals();
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mambakkadans GP Steel System</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background: #f2f2f2; }
+        input, select { padding: 6px; margin: 5px; }
+        button { padding: 8px 15px; margin: 5px; cursor: pointer; }
+        h2 { margin-bottom: 0; }
+    </style>
+</head>
+<body>
+
+<h2>Mambakkadans Steels & Cements</h2>
+<h3>GP Steel Quotation Calculator</h3>
+
+<label>Size:</label>
+<select id="size"></select>
+
+<label>Gauge:</label>
+<select id="gauge">
+    <option value="16" selected>16G (Default)</option>
+    <option value="18">18G</option>
+</select>
+
+<label>Quantity:</label>
+<input type="number" id="qty" min="1">
+
+<button onclick="addItem()">Add Item</button>
+<button onclick="resetBill()">Reset</button>
+
+<table>
+    <thead>
+        <tr>
+            <th>Size</th>
+            <th>Gauge</th>
+            <th>Qty</th>
+            <th>Wt/No</th>
+            <th>Total Wt</th>
+            <th>Rate</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    <tbody id="billBody"></tbody>
+</table>
+
+<h3 id="totalWeight">Total Weight: 0 kg</h3>
+<h3 id="totalAmount">Total Amount: ₹0</h3>
+
+<script>
+
+// ===== DATA FROM YOUR EXCEL =====
+const gpData = {
+    "1/2 * 1/2": {16: 3.8, 18: 3.2, rate: 74},
+    "3/4 * 3/4": {16: 4.8, 18: 4.0, rate: 74},
+    "1 * 1": {16: 6.2, 18: 5.2, rate: 74},
+    "1 1/4 * 1 1/4": {16: 7.9, 18: null, rate: 74},
+    "1 1/2 * 1 1/2": {16: 9.8, 18: null, rate: 74},
+    "2 * 2": {16: 12.3, 18: null, rate: 74},
+    "3 * 3": {16: 19.0, 18: null, rate: 74},
+    "4 * 4": {16: 38.0, 18: null, rate: 74},
+    "1 * 10": {16: 4.4, 18: null, rate: 74},
+    "1 1/2 * 10": {16: 6.2, 18: null, rate: 74},
+    "1 1/2 * 3/4": {16: 7.6, 18: null, rate: 74},
+    "2 * 1": {16: 9.5, 18: 8.5, rate: 74},
+    "2 1/2 * 1 1/2": {16: 13.0, 18: 12.5, rate: 74},
+    "3 * 1": {16: 12.8, 18: 11.0, rate: 74},
+    "3 * 1 1/2": {16: 15.3, 18: 12.8, rate: 74},
+    "4 * 1": {16: 15.1, 18: null, rate: 74},
+    "4 * 2": {16: 19.0, 18: null, rate: 74}
+};
+
+// Populate dropdown
+const sizeDropdown = document.getElementById("size");
+for (let size in gpData) {
+    let option = document.createElement("option");
+    option.value = size;
+    option.text = size;
+    sizeDropdown.add(option);
+}
+
+let grandWeight = 0;
+let grandAmount = 0;
+
+function addItem() {
+
+    const size = document.getElementById("size").value;
+    const gauge = document.getElementById("gauge").value;
+    const qty = parseFloat(document.getElementById("qty").value);
+
+    if (!qty || qty <= 0) {
+        alert("Enter valid quantity");
+        return;
+    }
+
+    let weightPerNo = gpData[size][gauge];
+
+    if (weightPerNo === null || weightPerNo === undefined) {
+        alert("18G not available for this size. Using 16G instead.");
+        weightPerNo = gpData[size][16];
+    }
+
+    const rate = gpData[size].rate;
+
+    const totalWeight = weightPerNo * qty;
+    const amount = totalWeight * rate;
+
+    grandWeight += totalWeight;
+    grandAmount += amount;
+
+    const row = `
+        <tr>
+            <td>${size}</td>
+            <td>${gauge}G</td>
+            <td>${qty}</td>
+            <td>${weightPerNo} kg</td>
+            <td>${totalWeight.toFixed(2)} kg</td>
+            <td>₹${rate}</td>
+            <td>₹${amount.toFixed(2)}</td>
+        </tr>
+    `;
+
+    document.getElementById("billBody").innerHTML += row;
+
+    document.getElementById("totalWeight").innerText =
+        "Total Weight: " + grandWeight.toFixed(2) + " kg";
+
+    document.getElementById("totalAmount").innerText =
+        "Total Amount: ₹" + grandAmount.toFixed(2);
+
+    document.getElementById("qty").value = "";
+}
+
+function resetBill() {
+    grandWeight = 0;
+    grandAmount = 0;
+    document.getElementById("billBody").innerHTML = "";
+    document.getElementById("totalWeight").innerText = "Total Weight: 0 kg";
+    document.getElementById("totalAmount").innerText = "Total Amount: ₹0";
+}
+
+</script>
+
+</body>
+</html>
